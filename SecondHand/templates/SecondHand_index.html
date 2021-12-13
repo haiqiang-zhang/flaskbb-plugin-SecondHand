@@ -1,0 +1,33 @@
+{% extends theme("layout.html") %}
+{% block content %}
+<div class="row">
+
+    <h1 class="text-center text-primary">讯飞未来港BBS二手交易平台</h1>
+
+    <div class="container-fluid my-4">
+        <div class="d-flex justify-content-end mb-4">
+            <button type="button" class="btn btn-secondary btn-lg">+ 发布商品</button>
+        </div>
+
+
+
+        <div class="row row-cols-2 row-cols-lg-4 g-4">
+            {% for i in items %}
+            <div class="col">
+                <a class="card">
+                    <img src="{{ i.main_picture_url }}" class="card-img-top" style="height: 300px"/>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ i.items_name }}</h5>
+                        <p class="card-text">¥{{ i.price }}</p>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+
+
+
+</div>
+{% endblock %}
