@@ -26,6 +26,7 @@ version = str(ast.literal_eval(version_line))
 setup(
     name="flaskbb-plugin-SecondHand",
     version=version,
+    url="https://github.com/haiqiang-zhang/flaskbb-plugin-SecondHand",
     author="Haiqiang Zhang",
     license="BSD",
     author_email="a1552094108@gmail.com",
