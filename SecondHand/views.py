@@ -6,7 +6,7 @@
     This module contains the SecondHand view.
 
 """
-from flask import Blueprint, current_app, flash, request, g
+from flask import Blueprint, current_app, flash, request, g, redirect, url_for
 from flask_babelplus import gettext as _
 from flask_login import current_user
 
@@ -17,13 +17,15 @@ from flaskbb.plugins.models import PluginRegistry
 from flaskbb.utils.helpers import time_diff, get_online_users
 from flaskbb.utils.settings import flaskbb_config
 import SecondHand
+import datetime
+from .form import ReleaseItemsForm
 
 from .model import Items
 
-SecondHand_bp = Blueprint("SecondHand", __name__, template_folder="templates")
+SecondHand_bp = Blueprint("SecondHand_bp", __name__, template_folder="templates")
 
 
-@SecondHand_bp.route("/")
+@SecondHand_bp.route("/", methods=['GET', 'POST'])
 def SecondHand_index():
     # page = request.args.get("page", 1, type=int)
     # forum_ids = []
@@ -73,19 +75,54 @@ def SecondHand_index():
     #     online_guests = len(get_online_users(guest=True))
     session = SecondHand.Session()
     items = session.query(Items).all()
-    print(items)
-
-
+    user_id = current_user.id
+    form = ReleaseItemsForm()
+    print([i.id for i in items])
+    if form.validate_on_submit():
+        item = Items(items_name=form.items_name.data,
+                     price=float(form.price.data),
+                     sellerID=user_id,
+                     description=form.desc.data,
+                     main_picture_url=form.main_picture_url.data,
+                     post_date=datetime.datetime.now())
+        print(item)
+        session = SecondHand.Session()
+        session.add(item)
+        session.commit()
+        return redirect(url_for("SecondHand_bp.SecondHand_index"))
     return render_template(
         "SecondHand_index.html",
-        items=items
-
+        items=items,
+        handler_url=url_for("SecondHand_bp.SecondHand_index"),
+        form=form
     )
 
 
 @SecondHand_bp.route("/userRecord")
 def SecondHand_userRecord():
+    session = SecondHand.Session()
+    myRelease = session.query(Items).filter(Items.sellerID == current_user.id)
+
     return render_template(
         "SecondHand_userRecord.html",
-        user=current_user
+        myRelease=myRelease,
+        user=current_user,
+        id=id
     )
+
+
+
+@SecondHand_bp.route("/del_myRelease/<item>")
+def SecondHand_del_myRelease(item):
+    session = SecondHand.Session()
+    i = session.query(Items).filter(Items.id == item).one()
+    session.delete(i)
+    session.commit()
+    return redirect(url_for("SecondHand_bp.SecondHand_userRecord"))
+
+
+
+
+
+
+

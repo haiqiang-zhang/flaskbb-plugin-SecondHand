@@ -1,33 +1,101 @@
 {% extends theme("layout.html") %}
 {% block content %}
-<div class="row">
-
-    <h1 class="text-center text-primary">讯飞未来港BBS二手交易平台</h1>
-
-    <div class="container-fluid my-4">
-        <div class="d-flex justify-content-end mb-4">
-            <button type="button" class="btn btn-secondary btn-lg">+ 发布商品</button>
-        </div>
-
-
-
-        <div class="row row-cols-2 row-cols-lg-4 g-4">
-            {% for i in items %}
-            <div class="col">
-                <a class="card">
-                    <img src="{{ i.main_picture_url }}" class="card-img-top" style="height: 300px"/>
-                    <div class="card-body">
-                        <h5 class="card-title">{{ i.items_name }}</h5>
-                        <p class="card-text">¥{{ i.price }}</p>
-                    </div>
-                </a>
+    <div class="row">
+        <h1 class="text-center text-primary">讯飞未来港BBS二手交易平台</h1>
+        <div class="container-fluid my-4">
+            <div class="d-flex justify-content-end mb-4">
+                <button type="button" class="btn btn-secondary btn-lg" data-bs-toggle="modal"
+                        data-bs-target="#ReleaseItemsModal">+ 发布物品
+                </button>
             </div>
-            {% endfor %}
+            <div class="row row-cols-2 row-cols-lg-4 g-4">
+                {% for i in items %}
+                    <div class="col">
+                        <div class="card">
+                            <a href="">
+                                <div class="align-items-center" style="overflow: hidden; height: 350px;">
+                                    <img src="{{ i.main_picture_url }}" class="img-thumbnail"/>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ i.items_name }}</h5>
+                                    <p class="card-text">¥{{ i.price }}</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination pagination-lg justify-content-center m-5">
+                    <li class="page-item disabled">
+                        <a class="page-link">Previous</a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
-
     </div>
 
+    <!--发布商品Model-->
+    <div class="modal fade" id="ReleaseItemsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">发布物品</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form action="{{ handler_url }}" method="post">
+                    {{ form.csrf_token }}
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="recipient-name" class="col-form-label">物品名称</label>
+                            {{ form.items_name(class="form-control" ) }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="message-text" class="col-form-label">价格</label>
+                            {{ form.price(class="form-control" ) }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="message-text" class="col-form-label">物品图片URL</label>
+                            {{ form.main_picture_url(class="form-control" ) }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="message-text" class="col-form-label">描述</label>
+                            {{ form.desc(class="form-control" ) }}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        {{ form.submit(class="btn btn-primary btn-lg") }}
+                    </div>
+                </form>
 
 
-</div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var ReleaseItemsModal = document.getElementById('ReleaseItemsModal')
+        ReleaseItemsModal.addEventListener('show.bs.modal', function (event) {
+            // Button that triggered the modal
+            var button = event.relatedTarget
+            // Extract info from data-bs-* attributes
+            var recipient = button.getAttribute('data-bs-whatever')
+            // If necessary, you could initiate an AJAX request here
+            // and then do the updating in a callback.
+            //
+            // Update the modal's content.
+            {#var modalTitle = ReleaseItemsModal.querySelector('.modal-title')#}
+            {#var modalBodyInput = ReleaseItemsModal.querySelector('.modal-body input')#}
+            {##}
+            {#modalTitle.textContent = 'New message to ' + recipient#}
+            {#modalBodyInput.value = recipient#}
+        })
+
+    </script>
 {% endblock %}

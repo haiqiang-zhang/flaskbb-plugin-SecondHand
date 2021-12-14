@@ -1,17 +1,83 @@
 {% extends theme("user/profile_layout.html") %}
 
 {% block breadcrumb %}
-<ol class="breadcrumb flaskbb-breadcrumb bg-light">
-    <li class="breadcrumb-item"><a href="{{ url_for('forum.index') }}">{% trans %}Forum{% endtrans %}</a></li>
-    <li class="breadcrumb-item"><a href="{{ user.url }}">{{ user.username }}</a></li>
-    <li class="breadcrumb-item active">{% trans %}二手交易{% endtrans %}</li>
-</ol>
+    <ol class="breadcrumb flaskbb-breadcrumb bg-light">
+        <li class="breadcrumb-item"><a href="{{ url_for('forum.index') }}">{% trans %}Forum{% endtrans %}</a></li>
+        <li class="breadcrumb-item"><a href="{{ user.url }}">{{ user.username }}</a></li>
+        <li class="breadcrumb-item active">{% trans %}二手交易{% endtrans %}</li>
+    </ol>
 {% endblock %}
 
 {% block profile_content %}
-<div class="row">
-    <h1 class="text-center text-primary">二手交易记录</h1>
+    <main>
+        <div class="d-flex align-items-start my-2">
+            <div class="nav flex-column nav-pills me-3" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                <button class="nav-link active m-1" id="v-pills-home-tab" data-bs-toggle="pill"
+                        data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home"
+                        aria-selected="true">我的发布
+                </button>
+                <button class="nav-link m-1" id="v-pills-profile-tab" data-bs-toggle="pill"
+                        data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile"
+                        aria-selected="false">已下单
+                </button>
+                <button class="nav-link m-1" id="v-pills-messages-tab" data-bs-toggle="pill"
+                        data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages"
+                        aria-selected="false">交易完成（卖家）
+                </button>
+                <button class="nav-link m-1" id="v-pills-settings-tab" data-bs-toggle="pill"
+                        data-bs-target="#v-pills-settings" type="button" role="tab" aria-controls="v-pills-settings"
+                        aria-selected="false">交易完成（买家）
+                </button>
+            </div>
+            <div class="tab-content" id="v-pills-tabContent" style="width: 80%">
+                <!--我发布的-->
+                <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel"
+                     aria-labelledby="v-pills-home-tab">
+
+                    <div class="accordion accordion-flush" id="accordionFlushExample">
+                        {% for i in myRelease %}
+                            <div class="accordion-item my-2 border border-primary border-2 rounded-2">
+                                <h2 class="accordion-header" id="flush-heading-{{ id(i) }}">
+                                    <button class="accordion-button collapsed align-items-center" type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#flush-items-{{ id(i) }}" aria-expanded="false"
+                                            aria-controls="flush-items-{{ id(i) }}">
+                                        <h3 class="m-0 p-0">{{ i.items_name }}</h3> &nbsp;&nbsp;&nbsp;
+                                        <p class="text-danger fw-bold m-0 p-0"> ¥{{ i.price }}</p>
+                                    </button>
+                                </h2>
+                                <div id="flush-items-{{ id(i) }}" class="accordion-collapse collapse"
+                                     aria-labelledby="flush-heading-{{ id(i) }}"
+                                     data-bs-parent="#accordionFlushExample">
+                                    <div class="accordion-body">
+                                        <p>{{ i.description }}</p>
+                                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                            <button class="btn btn-primary me-md-2" type="button">修改</button>
+                                            <button class="btn btn-danger" type="button"
+                                                    onclick="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id) }}'">删除</button>
+                                        </div>
 
 
-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+
+                </div>
+                <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                    ...
+                </div>
+                <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+                    ...
+                </div>
+                <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
+                    ...
+                </div>
+            </div>
+        </div>
+
+
+    </main>
 {% endblock %}

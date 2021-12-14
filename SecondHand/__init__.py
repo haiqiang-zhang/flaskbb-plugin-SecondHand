@@ -15,23 +15,18 @@ from .views import SecondHand_bp
 from .database import connect_database
 from itertools import chain
 
-
-
 __version__ = "0.1.0"
 hookimpl = HookimplMarker("flaskbb")
 Session = None
-
 
 def available_forums():
     forums = Forum.query.order_by(Forum.id.asc()).all()
     return [(forum.id, forum.title) for forum in forums]
 
-
 @hookimpl
 def flaskbb_extensions(app):
     global Session
     Session = connect_database(app)
-
 
 @hookimpl
 def flaskbb_load_blueprints(app):
@@ -39,21 +34,19 @@ def flaskbb_load_blueprints(app):
         SecondHand_bp, url_prefix=app.config.get("PLUGIN_SECONDHAND_URL_PREFIX", "/SecondHand")
     )
 
-
 @hookimpl
 def flaskbb_tpl_navigation_after():
     return NavigationLink(
-        endpoint="SecondHand.SecondHand_index",
+        endpoint="SecondHand_bp.SecondHand_index",
         name=_("二手交易"),
         icon="fas fa-hand-holding-usd",
     )
-
 
 @hookimpl
 def flaskbb_tpl_profile_links(user):
     return [
         NavigationLink(
-            endpoint="SecondHand.SecondHand_userRecord",
+            endpoint="SecondHand_bp.SecondHand_userRecord",
             name=_("二手交易"),
             icon="fas fa-hand-holding-usd",
             urlforkwargs={"username": user.username},
