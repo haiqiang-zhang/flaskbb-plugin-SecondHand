@@ -53,11 +53,12 @@
                                         <p>{{ i.description }}</p>
                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                             <button class="btn btn-primary me-md-2" type="button">修改</button>
-                                            <button class="btn btn-danger" type="button"
-                                                    onclick="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id) }}'">删除</button>
+                                            <button class="btn btn-danger" type="button" data-bs-toggle="modal"
+                                                    data-bs-target="#confirmDel" data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id) }}'"
+                                                    data-bs-itemName="{{ i.items_name }}">
+                                                删除
+                                            </button>
                                         </div>
-
-
                                     </div>
                                 </div>
                             </div>
@@ -77,7 +78,45 @@
                 </div>
             </div>
         </div>
-
-
     </main>
+
+
+    <div class="modal fade" tabindex="-1" id="confirmDel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>确认删除此已发布的物品吗？</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="confirmDelButton">
+                        删除
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var confirmDel = document.getElementById('confirmDel')
+        confirmDel.addEventListener('show.bs.modal', function (event) {
+            // Button that triggered the modal
+            var button = event.relatedTarget
+            // Extract info from data-bs-* attributes
+            var delUrl = button.getAttribute('data-bs-delUrl')
+            var name = button.getAttribute('data-bs-itemName')
+
+            var delButton = document.getElementById("confirmDelButton")
+            delButton.setAttribute('onclick', delUrl)
+
+            var modalTitle = confirmDel.querySelector('.modal-title')
+            modalTitle.textContent = name
+        })
+
+
+    </script>
 {% endblock %}

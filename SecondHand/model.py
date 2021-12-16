@@ -6,6 +6,15 @@ Base = declarative_base()
 
 class Items(Base):
     __tablename__ = 'items'
+    id = Column(Integer, primary_key=True)
+    items_name = Column(String)
+    price = Column(Float)
+    sellerID = Column(Integer)
+    buyerID = Column(Integer)
+    post_date = Column(DateTime)
+    transaction_date = Column(DateTime)
+    main_picture_url = Column(String)
+    description = Column(String)
 
     # def __init__(self, items_name: str, price: float, sellerID: int, description):
     #     self.__main_picture_url = None
@@ -17,18 +26,6 @@ class Items(Base):
     #     self.__post_date = datetime.datetime.now()
     #     self.__transaction_date = None
     #     self.__description = description
-
-    id = Column(Integer, primary_key=True)
-    items_name = Column(String)
-    price = Column(Float)
-    sellerID = Column(Integer)
-    buyerID = Column(Integer)
-    post_date = Column(DateTime)
-    transaction_date = Column(DateTime)
-    main_picture_url = Column(String)
-    description = Column(String)
-
-
 
 
     # @property
@@ -98,3 +95,19 @@ class Items(Base):
     # @main_picture_url.setter
     # def main_picture_url(self, value):
     #     self.__main_picture_url = value
+
+
+
+class Items_del(Base):
+    __tablename__ = 'items_del'
+    del_id = Column(Integer, primary_key=True)
+    prev_id = Column(Integer)
+    items_name = Column(String)
+    price = Column(Float)
+    sellerID = Column(Integer)
+    buyerID = Column(Integer)
+    post_date = Column(DateTime)
+    transaction_date = Column(DateTime)
+    main_picture_url = Column(String)
+    description = Column(String)
+    del_date = Column(DateTime)

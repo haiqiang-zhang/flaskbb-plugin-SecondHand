@@ -1,10 +1,31 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{#{% set page_title = title %}#}
+{#{% set active = "SecondHand_bp.SecondHand_mgmt" %}#}
+
+{% extends theme("management/management_layout.html") %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb flaskbb-breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ url_for('forum.index') }}">{% trans %}Forum{% endtrans %}</a></li>
+    <li class="breadcrumb-item"><a href="{{ url_for('management.overview') }}">{% trans %}Management{% endtrans %}</a></li>
+    <li class="breadcrumb-item active">二手交易管理</li>
+</ol>
+{% endblock %}
+
+{% block management_content %}
+{%- from theme('_macros/pagination.html') import render_pagination -%}
+{%- from theme('_macros/navigation.html') import navlink with context -%}
+{%- from theme('_macros/form.html') import render_field -%}
+
+<div class="col settings-col with-left-border">
+    <div class="card settings">
+        <div class="card-header settings-header">
+            <span class="fas fa-hand-holding-usd"></span> 二手交易管理
+        </div>
+        <div class="card-body settings-body">
+            <form class="row p-2" role="form" method="post">
+
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

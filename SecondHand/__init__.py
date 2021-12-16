@@ -14,6 +14,9 @@ from flaskbb.utils.forms import SettingValueType
 from .views import SecondHand_bp
 from .database import connect_database
 from itertools import chain
+from flask_allows import Permission
+from flask_login import current_user
+
 
 __version__ = "0.1.0"
 hookimpl = HookimplMarker("flaskbb")
@@ -34,6 +37,8 @@ def flaskbb_load_blueprints(app):
         SecondHand_bp, url_prefix=app.config.get("PLUGIN_SECONDHAND_URL_PREFIX", "/SecondHand")
     )
 
+
+
 @hookimpl
 def flaskbb_tpl_navigation_after():
     return NavigationLink(
@@ -44,15 +49,25 @@ def flaskbb_tpl_navigation_after():
 
 @hookimpl
 def flaskbb_tpl_profile_links(user):
-    return [
-        NavigationLink(
-            endpoint="SecondHand_bp.SecondHand_userRecord",
-            name=_("二手交易"),
-            icon="fas fa-hand-holding-usd",
-            urlforkwargs={"username": user.username},
-        ),
-    ]
+    if user == current_user:
+        return [
+            NavigationLink(
+                endpoint="SecondHand_bp.SecondHand_userRecord",
+                name=_("二手交易"),
+                icon="fas fa-hand-holding-usd",
+                urlforkwargs={"username": user.username},
+            ),
+        ]
 
+
+@hookimpl(trylast=True)
+def flaskbb_tpl_admin_settings_menu():
+    # only add this item if the user is an admin
+    from flaskbb.utils.requirements import IsAdmin  # noqa: circular dependency
+    if Permission(IsAdmin, identity=current_user):
+        return [
+            ("SecondHand_bp.SecondHand_mgmt", "二手交易管理", "fas fa-hand-holding-usd")
+        ]
 
 
 # @hookimpl

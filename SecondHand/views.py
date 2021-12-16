@@ -8,7 +8,7 @@
 """
 from flask import Blueprint, current_app, flash, request, g, redirect, url_for
 from flask_babelplus import gettext as _
-from flask_login import current_user
+from flask_login import current_user, login_fresh
 
 from flaskbb.utils.helpers import render_template
 from flaskbb.forum.models import Topic, Post, Forum
@@ -20,9 +20,21 @@ import SecondHand
 import datetime
 from .form import ReleaseItemsForm
 
-from .model import Items
+from .model import Items, Items_del
 
 SecondHand_bp = Blueprint("SecondHand_bp", __name__, template_folder="templates")
+
+
+
+
+
+
+@SecondHand_bp.before_request
+def check_fresh_login():
+    """Checks if the login is fresh for the current user, otherwise the user
+    has to reauthenticate."""
+    if not login_fresh():
+        return current_app.login_manager.needs_refresh()
 
 
 @SecondHand_bp.route("/", methods=['GET', 'POST'])
@@ -102,7 +114,6 @@ def SecondHand_index():
 def SecondHand_userRecord():
     session = SecondHand.Session()
     myRelease = session.query(Items).filter(Items.sellerID == current_user.id)
-
     return render_template(
         "SecondHand_userRecord.html",
         myRelease=myRelease,
@@ -111,18 +122,29 @@ def SecondHand_userRecord():
     )
 
 
-
 @SecondHand_bp.route("/del_myRelease/<item>")
 def SecondHand_del_myRelease(item):
     session = SecondHand.Session()
-    i = session.query(Items).filter(Items.id == item).one()
+    i: Items = session.query(Items).filter(Items.id == item).one()
+    item_del = Items_del(
+        prev_id=i.id,
+        items_name=i.items_name,
+        price=i.price,
+        sellerID=i.sellerID,
+        buyerID=i.buyerID,
+        post_date=i.post_date,
+        transaction_date=i.transaction_date,
+        main_picture_url=i.main_picture_url,
+        description=i.description,
+        del_date=datetime.datetime.now())
+    session.add(item_del)
     session.delete(i)
     session.commit()
     return redirect(url_for("SecondHand_bp.SecondHand_userRecord"))
 
 
-
-
-
-
-
+@SecondHand_bp.route("/SecondHand_mgmt")
+def SecondHand_mgmt():
+    return render_template(
+        "SecondHand_mgmt.html"
+    )
