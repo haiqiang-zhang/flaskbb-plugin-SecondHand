@@ -1,4 +1,5 @@
 {% extends theme("layout.html") %}
+{% set page_title = "讯飞未来港BBS二手交易平台" %}
 {% block content %}
     <div class="row">
         <h1 class="text-center text-primary">讯飞未来港BBS二手交易平台</h1>
@@ -12,7 +13,7 @@
                 {% for i in items %}
                     <div class="col">
                         <div class="card">
-                            <a href="">
+                            <a href="{{ url_for("SecondHand_bp.SecondHand_desc", item=i.id) }}">
                                 <div class="align-items-center" style="overflow: hidden; height: 350px;">
                                     <img src="{{ i.main_picture_url }}" class="img-thumbnail"/>
                                 </div>

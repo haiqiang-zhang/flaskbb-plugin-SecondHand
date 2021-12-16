@@ -1,0 +1,108 @@
+{% extends theme("layout.html") %}
+
+
+{% block content %}
+    {% from theme('_macros/pagination.html') import render_pagination, generate_obj_id, generate_post_url %}
+    {% from theme('_macros/form.html') import render_input_field, render_editor_field, render_submit_field %}
+
+
+
+
+    <div class="card topic">
+        <div class="card-header topic-header">
+            <a href="" class="fs-5">{{ item.items_name }}</a>
+        </div>
+        <div class="card-body topic-body">
+
+            <div id="1" class="row post-row">
+
+                <div class="author col-md-2 col-sm-3 col-12">
+                    <div class="align-items-center" style="overflow: hidden; height: 350px;">
+                        <img src="{{ item.main_picture_url }}" class="img-thumbnail"/>
+                    </div>
+
+
+                </div>
+
+                <div class="post-box col-md-10 col-sm-9 col-12">
+
+                    <div class="post-meta row">
+
+                        <!-- Post number -->
+                        <div class="col-auto g-0 author">
+                            <a href="{{ user.url }}" class="fw-bold text-primary fs-4"
+                               style="float: left;">{{ user.username }}</a>
+
+                            {% if user|is_online %}
+                                <div class="author-online" tabindex="0" data-bs-toggle="tooltip" title="在线"></div>
+                            {% else %}
+                                <div class="author-offline" data-bs-toggle="tooltip" title="离线"></div>
+                            {% endif %}
+
+                            <br/><br/>
+                            <p class="fw-bold text-secondary fs-6">{{ item.post_date }}</p>
+                        </div>
+                    </div>
+
+                    <div class="post-content">
+                        {{ item.description }}
+                    </div>
+
+                    <div class="post-footer">
+                        <div class="post-menu float-end">
+
+                            {% if user==current_user %}
+                                <!-- Edit -->
+                                <a href="/topic/1/edit" class="btn btn-icon far fa-edit text-green"
+                                   data-bs-toggle="tooltip"
+                                   title="" data-bs-original-title="Edit this topic" aria-label="Edit this topic"></a>
+
+                                <!-- Delete -->
+                                <button class="btn btn-icon far fa-trash-alt text-red" type="button"
+                                        data-bs-toggle="modal" data-tooltip="tooltip"
+                                        title="" data-bs-original-title="删除这个物品" data-bs-target="#confirmDel"
+                                        aria-label="删除这个物品"></button>
+                            {% endif %}
+
+
+                        </div> <!-- end post-menu -->
+                    </div> <!-- end footer -->
+
+
+                </div>
+            </div>
+
+        </div> <!-- end topic-body -->
+    </div>
+    {% if user != current_user %}
+        <div class="d-flex justify-content-end mb-4">
+            <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal"
+                    data-bs-target="#buyConfirm">购买
+            </button>
+        </div>
+    {% endif %}
+
+    <div class="modal fade" tabindex="-1" id="confirmDel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ item.items_name }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>确认删除此已发布的物品吗？</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="confirmDelButton"
+                            onclick="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=item.id, next_url=url_for("SecondHand_bp.SecondHand_index")) }}'">
+                        删除
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}

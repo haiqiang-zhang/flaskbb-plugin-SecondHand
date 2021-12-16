@@ -54,7 +54,7 @@
                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                             <button class="btn btn-primary me-md-2" type="button">修改</button>
                                             <button class="btn btn-danger" type="button" data-bs-toggle="modal"
-                                                    data-bs-target="#confirmDel" data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id) }}'"
+                                                    data-bs-target="#confirmDel" data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord")) }}'"
                                                     data-bs-itemName="{{ i.items_name }}">
                                                 删除
                                             </button>
