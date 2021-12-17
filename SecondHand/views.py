@@ -6,7 +6,9 @@
     This module contains the SecondHand view.
 
 """
-from flask import Blueprint, current_app, flash, request, g, redirect, url_for
+import json
+
+from flask import Blueprint, current_app, flash, request, g, redirect, url_for, jsonify
 from flask_babelplus import gettext as _
 from flask_login import current_user, login_fresh
 
@@ -18,11 +20,11 @@ from flaskbb.utils.helpers import time_diff, get_online_users
 from flaskbb.utils.settings import flaskbb_config
 import SecondHand
 import datetime
-from .form import ReleaseItemsForm
+from .form import ReleaseItemsForm, PurchaseItemsForm
 
 from .model import Items, Items_del
 
-SecondHand_bp = Blueprint("SecondHand_bp", __name__, template_folder="templates")
+SecondHand_bp = Blueprint("SecondHand_bp", __name__, template_folder="templates", static_folder="static")
 
 
 @SecondHand_bp.before_request
@@ -39,7 +41,13 @@ def SecondHand_index():
     items = session.query(Items).all()
     user_id = current_user.id
     form = ReleaseItemsForm()
-    print([i.id for i in items])
+    if request.method == 'GET':
+        return render_template(
+            "SecondHand_index.html",
+            items=items,
+            handler_url=url_for("SecondHand_bp.SecondHand_index"),
+            form=form
+        )
     if form.validate_on_submit():
         item = Items(items_name=form.items_name.data,
                      price=float(form.price.data),
@@ -47,17 +55,16 @@ def SecondHand_index():
                      description=form.desc.data,
                      main_picture_url=form.main_picture_url.data,
                      post_date=datetime.datetime.now())
-        print(item)
         session = SecondHand.Session()
         session.add(item)
         session.commit()
-        return redirect(url_for("SecondHand_bp.SecondHand_index"))
-    return render_template(
-        "SecondHand_index.html",
-        items=items,
-        handler_url=url_for("SecondHand_bp.SecondHand_index"),
-        form=form
-    )
+        return json.dumps({"validate":"success"})
+    else:
+        error = dict({"validate" : "error"}, **form.errors)
+        print(error)
+        return json.dumps(error)
+
+
 
 
 @SecondHand_bp.route("/userRecord")
@@ -106,9 +113,11 @@ def SecondHand_desc(item):
     session = SecondHand.Session()
     i: Items = session.query(Items).filter(Items.id == item).one()
     user = User.query.filter(i.sellerID == User.id).one()
+    form = PurchaseItemsForm()
     return render_template(
         "SecondHand_itemsDesc.html",
         item=i,
         user=user,
-        request=request
+        request=request,
+        form=form
     )
