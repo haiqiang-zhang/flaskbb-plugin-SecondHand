@@ -12,7 +12,7 @@ class ReleaseItemsForm(FlaskForm):
 
 class PurchaseItemsForm(FlaskForm):
     email = TextField("email", validators=[Email(message='Email格式输入错误')])
-    phone = TextField("phone")
+    phone = TextField("phone", validators=[InputRequired(message="请输入手机号")])
     location = TextField("location")
     comment = TextAreaField("comment")
     submit = SubmitField("Submit")

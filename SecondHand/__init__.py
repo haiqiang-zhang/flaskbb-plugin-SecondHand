@@ -16,7 +16,8 @@ from .database import connect_database
 from itertools import chain
 from flask_allows import Permission
 from flask_login import current_user
-
+from .model import orderStatus
+from sqlalchemy.orm import sessionmaker
 
 __version__ = "0.1.0"
 hookimpl = HookimplMarker("flaskbb")
@@ -30,6 +31,8 @@ def available_forums():
 def flaskbb_extensions(app):
     global Session
     Session = connect_database(app)
+
+
 
 @hookimpl
 def flaskbb_load_blueprints(app):

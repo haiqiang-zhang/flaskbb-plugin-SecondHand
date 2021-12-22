@@ -21,7 +21,8 @@ from flaskbb.utils.settings import flaskbb_config
 import SecondHand
 import datetime
 from .form import ReleaseItemsForm, PurchaseItemsForm
-
+from conversations.models import Conversation, Message
+import uuid
 from .model import Items, Items_del
 
 SecondHand_bp = Blueprint("SecondHand_bp", __name__, template_folder="templates", static_folder="static")
@@ -38,7 +39,7 @@ def check_fresh_login():
 @SecondHand_bp.route("/", methods=['GET', 'POST'])
 def SecondHand_index():
     session = SecondHand.Session()
-    items = session.query(Items).all()
+    items = session.query(Items).filter(Items.orderStatusId == 1)
     user_id = current_user.id
     form = ReleaseItemsForm()
     if request.method == 'GET':
@@ -54,7 +55,8 @@ def SecondHand_index():
                      sellerID=user_id,
                      description=form.desc.data,
                      main_picture_url=form.main_picture_url.data,
-                     post_date=datetime.datetime.now())
+                     post_date=datetime.datetime.now(),
+                     orderStatusId=1)
         session = SecondHand.Session()
         session.add(item)
         session.commit()
@@ -93,6 +95,11 @@ def SecondHand_del_myRelease(item):
         transaction_date=i.transaction_date,
         main_picture_url=i.main_picture_url,
         description=i.description,
+        orderStatusId=i.orderStatusId,
+        buyer_phone=i.buyer_phone,
+        buyer_email=i.buyer_email,
+        buyer_location=i.buyer_location,
+        buyer_comment=i.buyer_comment,
         del_date=datetime.datetime.now())
     session.add(item_del)
     session.delete(i)
@@ -108,16 +115,65 @@ def SecondHand_mgmt():
     )
 
 
-@SecondHand_bp.route("/SecondHand_desc/<item>")
+@SecondHand_bp.route("/SecondHand_desc/<item>", methods=['GET', 'POST'])
 def SecondHand_desc(item):
     session = SecondHand.Session()
     i: Items = session.query(Items).filter(Items.id == item).one()
     user = User.query.filter(i.sellerID == User.id).one()
     form = PurchaseItemsForm()
-    return render_template(
-        "SecondHand_itemsDesc.html",
-        item=i,
-        user=user,
-        request=request,
-        form=form
-    )
+    if request.method == 'GET':
+        return render_template(
+            "SecondHand_itemsDesc.html",
+            item=i,
+            user=user,
+            request=request,
+            form=form
+        )
+    if form.validate_on_submit():
+        i.buyerID = current_user.id
+        i.start_transaction_date = datetime.datetime.now()
+        i.orderStatusId = 2
+        i.buyer_phone = form.phone.data
+        i.buyer_email = form.email.data
+        i.buyer_location = form.location.data
+        i.buyer_comment = form.comment.data
+        session.commit()
+
+        # send message to seller
+        purchase_message = "系统自动发送\n{} 已下单 {} 商品，请您尽快与他联系\n买家的联系方式:\n手机:{}\nEmail:{}\n地址:{}\n留言:{}"\
+            .format(current_user.username, i.items_name, form.phone.data, form.email.data, form.location.data, form.comment.data)
+        message_seller = Message(
+            message=purchase_message,
+            user_id=current_user.id
+        )
+        conversation_seller = Conversation(
+            subject=current_user.username + " 已下单 " + i.items_name,
+            draft=False,
+            shared_id=uuid.uuid4(),
+            from_user_id=current_user.id,
+            to_user_id=i.sellerID,
+            user_id=i.sellerID,
+            unread=True,
+        )
+        conversation_seller.save(message=message_seller)
+        message_buyer = Message(
+            message=purchase_message,
+            user_id=current_user.id
+        )
+        conversation_buyer = Conversation(
+            subject=current_user.username + " 已下单 " + i.items_name,
+            draft=False,
+            shared_id=uuid.uuid4(),
+            from_user_id=current_user.id,
+            to_user_id=i.sellerID,
+            user_id=current_user.id,
+            unread=False,
+        )
+        conversation_buyer.save(message=message_buyer)
+
+
+        return json.dumps({"validate": "success"})
+    else:
+        error = dict({"validate": "error"}, **form.errors)
+        print(error)
+        return json.dumps(error)

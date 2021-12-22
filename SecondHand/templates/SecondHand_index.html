@@ -75,11 +75,11 @@
 
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="recipient-name" class="col-form-label">物品名称</label>
+                            <label for="recipient-name" class="col-form-label">物品名称*</label>
                             {{ form.items_name(class="form-control" ) }}
                         </div>
                         <div class="mb-3">
-                            <label for="message-text" class="col-form-label">价格</label>
+                            <label for="message-text" class="col-form-label">价格*</label>
                             {{ form.price(class="form-control" ) }}
                         </div>
                         <div class="mb-3">
@@ -119,11 +119,8 @@
         })
 
 
-
-
-
         $("#releaseButton").on("click", function (event) {
-            event.preventDefault()
+            event.preventDefault();
             var form = new FormData(document.getElementById("ReleaseItemsForm"));
             $.ajax({
                 url: "{{ url_for('SecondHand_bp.SecondHand_index') }}",
@@ -143,7 +140,7 @@
                         <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
                             <use xlink:href="#exclamation-triangle-fill"/>
                         </svg>
-                        ${response[i][1]}
+                        ${response[i]}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>`
 
