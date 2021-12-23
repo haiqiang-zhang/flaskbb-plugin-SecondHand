@@ -72,11 +72,16 @@ def SecondHand_index():
 @SecondHand_bp.route("/userRecord")
 def SecondHand_userRecord():
     session = SecondHand.Session()
-    myRelease = session.query(Items).filter(Items.sellerID == current_user.id)
+    onSalse = session.query(Items).filter(Items.sellerID == current_user.id, Items.orderStatusId == 1)
+    onTransaction = session.query(Items).filter(Items.sellerID == current_user.id, Items.orderStatusId.in_([2, 3, 5]))
+    success = session.query(Items).filter(Items.sellerID == current_user.id, Items.orderStatusId.in_([4, 6]))
+
     return render_template(
         "SecondHand_userRecord.html",
-        myRelease=myRelease,
+        myRelease=onSalse,
         user=current_user,
+        onTransaction=onTransaction,
+        success=success,
         id=id
     )
 
@@ -138,7 +143,6 @@ def SecondHand_desc(item):
         i.buyer_location = form.location.data
         i.buyer_comment = form.comment.data
         session.commit()
-
         # send message to seller
         purchase_message = "系统自动发送\n{} 已下单 {} 商品，请您尽快与他联系\n买家的联系方式:\n手机:{}\nEmail:{}\n地址:{}\n留言:{}"\
             .format(current_user.username, i.items_name, form.phone.data, form.email.data, form.location.data, form.comment.data)
@@ -170,8 +174,6 @@ def SecondHand_desc(item):
             unread=False,
         )
         conversation_buyer.save(message=message_buyer)
-
-
         return json.dumps({"validate": "success"})
     else:
         error = dict({"validate": "error"}, **form.errors)

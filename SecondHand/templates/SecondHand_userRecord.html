@@ -11,24 +11,26 @@
 {% block profile_content %}
     <main>
         <div class="d-flex align-items-start my-2">
-            <div class="nav flex-column nav-pills m-2 me-5 shadow-lg p-3 mb-5 rounded border border-5" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+            <div class="nav flex-column nav-pills m-2 me-5 shadow-lg p-3 mb-5 rounded border border-5" id="v-pills-tab"
+                 role="tablist" aria-orientation="vertical">
                 <p class="m-0 p-0 text-secondary">作为卖方</p>
-                <button class="nav-link active m-1" id="v-pills-home-tab" data-bs-toggle="pill"
-                        data-bs-target="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home"
+                <button class="nav-link active m-1" id="button-onsale" data-bs-toggle="pill"
+                        data-bs-target="#page-onsale" type="button" role="tab" aria-controls="button-onsale"
                         aria-selected="true">我的发布
                 </button>
-                <button class="nav-link m-1" id="v-pills-messages-tab" data-bs-toggle="pill"
-                        data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages"
+                <button class="nav-link m-1" id="button-ontransaction" data-bs-toggle="pill"
+                        data-bs-target="#page-ontransaction" type="button" role="tab"
+                        aria-controls="botton-on-transaction"
                         aria-selected="false">正在交易
                 </button>
-                <button class="nav-link m-1" id="v-pills-messages-tab" data-bs-toggle="pill"
-                        data-bs-target="#v-pills-messages" type="button" role="tab" aria-controls="v-pills-messages"
+                <button class="nav-link m-1" id="button-success" data-bs-toggle="pill"
+                        data-bs-target="#page-success" type="button" role="tab" aria-controls="button-success"
                         aria-selected="false">交易完成
                 </button>
-
                 <p class="m-0 p-0 text-secondary mt-3">作为买方</p>
-                <button class="nav-link m-1" id="v-pills-profile-tab" data-bs-toggle="pill"
-                        data-bs-target="#v-pills-profile" type="button" role="tab" aria-controls="v-pills-profile"
+                <button class="nav-link m-1" id="button-buyer-ontransaction" data-bs-toggle="pill"
+                        data-bs-target="#page-buyer-ontransaction" type="button" role="tab"
+                        aria-controls="button-buyer-ontransaction"
                         aria-selected="false">已下单
                 </button>
                 <button class="nav-link m-1" id="v-pills-settings-tab" data-bs-toggle="pill"
@@ -38,32 +40,30 @@
             </div>
             <div class="tab-content" id="v-pills-tabContent" style="width: 80%">
                 <!--我发布的-->
-                <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel"
-                     aria-labelledby="v-pills-home-tab">
-
-                    <div class="accordion accordion-flush" id="accordionFlushExample">
+                <div class="tab-pane fade show active" id="page-onsale" role="tabpanel"
+                     aria-labelledby="page-onsale">
+                    <div class="accordion accordion-flush" id="accordionFlush-onsalse">
                         {% for i in myRelease %}
                             <div class="accordion-item my-2 border border-primary border-2 rounded-2">
                                 <h2 class="accordion-header form-check-label " id="flush-heading-{{ id(i) }}">
                                     <div class="row">
-                                        <input class="col-1 form-check-input m-4 me-2" type="checkbox" value="" id="" style="width: 23px; height: 23px;">
-                                        <button class="col accordion-button collapsed align-items-center me-4 p-0" type="button"
+                                        <input class="col-1 form-check-input m-4 me-2" type="checkbox" value="" id=""
+                                               style="width: 23px; height: 23px;">
+                                        <button class="col accordion-button collapsed align-items-center me-4 p-0"
+                                                type="button"
                                                 data-bs-toggle="collapse"
-                                                data-bs-target="#flush-items-{{ id(i) }}" aria-expanded="false"
-                                                aria-controls="flush-items-{{ id(i) }}">
-
+                                                data-bs-target="#flush-items-{{ id(i) }}">
                                             <h3 class="m-0 p-0">{{ i.items_name }}</h3> &nbsp;&nbsp;&nbsp;
-                                            <p class="text-danger fw-bold m-0 p-0"> ¥{{ i.price }}</p>
+                                            <p class="text-danger fw-bold m-0 p-0"> ¥{{ i.price }}</p> &nbsp;&nbsp;
+                                            <p class="text-secondary m-0 p-0">发布时间: {{ i.post_date }}</p>
                                         </button>
-
                                     </div>
-
                                 </h2>
                                 <div id="flush-items-{{ id(i) }}" class="accordion-collapse collapse"
-                                     aria-labelledby="flush-heading-{{ id(i) }}"
-                                     data-bs-parent="#accordionFlushExample">
+                                     data-bs-parent="#accordionFlush-onsalse">
                                     <div class="accordion-body">
-                                        <p>{{ i.description }}</p>
+                                        <h4 class="text-secondary">描述</h4>
+                                        <p>&nbsp;{{ i.description }}</p>
                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                             <button class="btn btn-primary me-md-2" type="button">修改</button>
                                             <button class="btn btn-danger" type="button" data-bs-toggle="modal"
@@ -78,17 +78,179 @@
                             </div>
                         {% endfor %}
                     </div>
+                </div>
+                <!--正在交易-->
+                <div class="tab-pane fade" id="page-ontransaction" role="tabpanel"
+                     aria-labelledby="page-on-transaction">
+                    <div class="accordion accordion-flush" id="accordionFlush-ontransaction">
+                        {% for i in onTransaction %}
+                            <div class="accordion-item my-2 border border-primary border-2 rounded-2">
+                                <h2 class="accordion-header form-check-label "
+                                    id="ontransaction-flush-heading-{{ id(i) }}">
+                                    <div class="row">
+                                        <input class="col-1 form-check-input m-4 me-2" type="checkbox" value="" id=""
+                                               style="width: 23px; height: 23px;">
+                                        <button class="col accordion-button collapsed align-items-center me-4 p-0"
+                                                type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#ontransaction-flush-items-{{ id(i) }}"
+                                                aria-expanded="false"
+                                                aria-controls="ontransaction-flush-items-{{ id(i) }}">
+                                            <h3 class="m-0 p-0">{{ i.items_name }}</h3> &nbsp;&nbsp;&nbsp;
+                                            <p class="text-danger fw-bold m-0 p-0"> ¥{{ i.price }}</p>&nbsp;&nbsp;
+                                            <p class="text-secondary m-0 p-0">发布时间: {{ i.post_date }}</p>&nbsp;&nbsp;
+                                            {% if i.orderStatusId == 5 %}
+                                                <span class="text-danger fw-bold">订单被买家取消!</span>
+                                            {% endif %}
+                                        </button>
+                                    </div>
+                                </h2>
+                                <div id="ontransaction-flush-items-{{ id(i) }}" class="accordion-collapse collapse"
+                                     aria-labelledby="flush-heading-{{ id(i) }}"
+                                     data-bs-parent="#accordionFlush-ontransaction">
+                                    <div class="accordion-body">
+                                        <h4 class="text-primary">买家信息</h4>
+                                        <p>&nbsp;<span class="fw-bold text-muted ">手机号</span> {{ i.buyer_phone }}</p>
+                                        <p>&nbsp;<span class="fw-bold text-muted ">Email</span> {{ i.buyer_email }}</p>
+                                        <p>&nbsp;<span class="fw-bold text-muted ">地址</span> {{ i.buyer_location }}</p>
+                                        <p>&nbsp;<span class="fw-bold text-muted ">留言</span> {{ i.buyer_comment }}</p>
+                                        <h4 class="text-secondary">描述</h4>
+                                        <p>&nbsp;{{ i.description }}</p>
+                                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                            {% if i.orderStatusId == 2 %}
+                                                <button class="btn btn-secondary" type="button" disabled>
+                                                    等待买家确认收货
+                                                </button>
+                                            {% elif i.orderStatusId == 3 %}
+                                                <button class="btn btn-success" type="button" data-bs-toggle="modal"
+                                                        data-bs-target="#confirmFinish"
+                                                        data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord")) }}'"
+                                                        data-bs-itemName="{{ i.items_name }}">
+                                                    确认完成交易
+                                                </button>
+                                            {% elif i.orderStatusId == 5 %}
+                                                <span class="text-danger fw-bold align-self-center">订单被买家取消，请联系买家，如同意买家取消请确认取消。</span>
+                                                <button class="btn btn-warning" type="button" data-bs-toggle="modal"
+                                                        data-bs-target="#confirmFinish"
+                                                        data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord")) }}'"
+                                                        data-bs-itemName="{{ i.items_name }}">
+                                                    确认取消
+                                                </button>
+                                            {% else %}
+                                                <span class="text-danger fw-bold">订单状态异常请联系管理员</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!--交易完成-->
+                <div class="tab-pane fade" id="page-success" role="tabpanel" aria-labelledby="page-success">
+                    <div class="accordion accordion-flush" id="accordionFlush-success">
+                        {% for i in success %}
+                            <div class="accordion-item my-2 border border-primary border-2 rounded-2">
+                                <h2 class="accordion-header form-check-label " id="success-flush-heading-{{ id(i) }}">
+                                    <div class="row">
+                                        <input class="col-1 form-check-input m-4 me-2" type="checkbox" value="" id=""
+                                               style="width: 23px; height: 23px;">
+                                        <button class="col accordion-button collapsed align-items-center me-4 p-0"
+                                                type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#success-flush-items-{{ id(i) }}">
+                                            <h3 class="m-0 p-0">{{ i.items_name }}</h3> &nbsp;&nbsp;&nbsp;
+                                            <p class="text-danger fw-bold m-0 p-0"> ¥{{ i.price }}</p>&nbsp;&nbsp;
+                                            <p class="text-secondary m-0 p-0">发布时间: {{ i.post_date }}</p>&nbsp;&nbsp;
+                                            {% if i.orderStatusId == 4 %}
+                                                <p class="text-primary m-0 p-0 fw-bold">交易成功!</p>
+                                            {% elif i.orderStatusId == 6 %}
+                                                <p class="text-primary m-0 p-0 fw-bold">交易取消!</p>
+                                            {% else %}
+                                                <p class="text-danger m-0 p-0 fw-bold">系统异常!</p>
+                                            {% endif %}
+                                        </button>
+                                    </div>
+                                </h2>
+                                <div id="success-flush-items-{{ id(i) }}" class="accordion-collapse collapse"
+                                     data-bs-parent="#accordionFlush-success">
+                                    <div class="accordion-body">
+                                        <p>{{ i.description }}</p>
+                                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                            {% if i.orderStatusId == 6 %}
+                                                <button class="btn btn-primary" type="button" data-bs-toggle="modal"
+                                                        data-bs-target=""
+                                                        data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord")) }}'"
+                                                        data-bs-itemName="{{ i.items_name }}">
+                                                    修改并重新上架
+                                                </button>
+                                            {% endif %}
+                                            <button class="btn btn-danger" type="button" data-bs-toggle="modal"
+                                                    data-bs-target="#confirmDel"
+                                                    data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord")) }}'"
+                                                    data-bs-itemName="{{ i.items_name }}">
+                                                删除
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
 
-
-                </div>
-                <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
-                    ...
-                </div>
-                <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
-                    ...
-                </div>
-                <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">
-                    ...
+                <!--作为买方-已下单-->
+                <div class="tab-pane fade" id="page-buyer-ontransaction" role="tabpanel"
+                     aria-labelledby="page-buyer-ontransaction">
+                    <div class="accordion accordion-flush" id="accordionFlush-buyer-ontransaction">
+                        {% for i in success %}
+                            <div class="accordion-item my-2 border border-primary border-2 rounded-2">
+                                <h2 class="accordion-header form-check-label">
+                                    <div class="row">
+                                        <input class="col-1 form-check-input m-4 me-2" type="checkbox" value="" id=""
+                                               style="width: 23px; height: 23px;">
+                                        <button class="col accordion-button collapsed align-items-center me-4 p-0"
+                                                type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#buyer-ontransaction-flush-items-{{ id(i) }}">
+                                            <h3 class="m-0 p-0p">{{ i.items_name }}</h3> &nbsp;&nbsp;&nbsp;
+                                            <p class="text-danger fw-bold m-0 p-0"> ¥{{ i.rice }}</p>&nbsp;&nbsp;
+                                            <p class="text-secondary m-0 p-0">下单时间: {{ i.start_transaction_date }}</p>&nbsp;&nbsp;
+                                            {% if i.orderStatusId == 4 %}
+                                                <p class="text-primary m-0 p-0 fw-bold">交易成功!</p>
+                                            {% elif i.orderStatusId == 6 %}
+                                                <p class="text-primary m-0 p-0 fw-bold">交易取消!</p>
+                                            {% else %}
+                                                <p class="text-danger m-0 p-0 fw-bold">系统异常!</p>
+                                            {% endif %}
+                                        </button>
+                                    </div>
+                                </h2>
+                                <div id="buyer-ontransaction-flush-items-{{ id(i) }}" class="accordion-collapse collapse"
+                                     data-bs-parent="#accordionFlush-buyer-ontransaction">
+                                    <div class="accordion-body">
+                                        <p>{{ i.description }}</p>
+                                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                            {% if i.orderStatusId == 6 %}
+                                                <button class="btn btn-primary" type="button" data-bs-toggle="modal"
+                                                        data-bs-target=""
+                                                        data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord")) }}'"
+                                                        data-bs-itemName="{{ i.items_name }}">
+                                                    修改并重新上架
+                                                </button>
+                                            {% endif %}
+                                            <button class="btn btn-danger" type="button" data-bs-toggle="modal"
+                                                    data-bs-target="#confirmDel"
+                                                    data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord")) }}'"
+                                                    data-bs-itemName="{{ i.items_name }}">
+                                                删除
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -123,10 +285,8 @@
             // Extract info from data-bs-* attributes
             var delUrl = button.getAttribute('data-bs-delUrl')
             var name = button.getAttribute('data-bs-itemName')
-
             var delButton = document.getElementById("confirmDelButton")
             delButton.setAttribute('onclick', delUrl)
-
             var modalTitle = confirmDel.querySelector('.modal-title')
             modalTitle.textContent = name
         })
