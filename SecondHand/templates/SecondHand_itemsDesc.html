@@ -57,9 +57,13 @@
     </div>
     {% if user != current_user %}
         <div class="d-flex justify-content-end mb-4 my-2">
-            <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal"
-                    data-bs-target="#PurchaseModal">购买
-            </button>
+            {% if item.orderStatusId == 1 %}
+                <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal"
+                        data-bs-target="#PurchaseModal">购买
+                </button>
+            {% else %}
+                <button class="btn btn-secondary btn-lg" disabled>已被购买</button>
+            {% endif %}
         </div>
     {% endif %}
 
@@ -95,7 +99,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                 <div id="PurchaseMessage">
+                <div id="PurchaseMessage">
                 </div>
 
 
@@ -120,7 +124,11 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-primary btn-lg" id="purchaseButton">购买</button>
+                        {% if item.orderStatusId == 1 %}
+                            <button class="btn btn-primary btn-lg" id="purchaseButton">购买</button>
+                        {% else %}
+                            <button class="btn btn-secondary btn-lg" disabled>已被购买</button>
+                        {% endif %}
                     </div>
                 </form>
             </div>

@@ -15,9 +15,10 @@ def connect_database(app):
         session = session_factory()
         orderStatusAll = [orderStatus(id=1, StatusName="On-Sale"),
                           orderStatus(id=2, StatusName="On-Transaction"),
-                          orderStatus(id=3, StatusName="Buyer-Cancel"),
-                          orderStatus(id=4, StatusName="Confirmed"),
-                          orderStatus(id=5, StatusName="Success")]
+                          orderStatus(id=3, StatusName="Buyer-Success"),
+                          orderStatus(id=4, StatusName="Success"),
+                          orderStatus(id=5, StatusName="Buyer-Cancel"),
+                          orderStatus(id=6, StatusName="Seller-reprocess")]
         session.add_all(orderStatusAll)
         session.commit()
         print("REPOPULATING DATABASE for SecondHand Plugin ... FINISHED")

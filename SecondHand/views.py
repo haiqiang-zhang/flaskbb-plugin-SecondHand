@@ -60,13 +60,11 @@ def SecondHand_index():
         session = SecondHand.Session()
         session.add(item)
         session.commit()
-        return json.dumps({"validate":"success"})
+        return json.dumps({"validate": "success"})
     else:
-        error = dict({"validate" : "error"}, **form.errors)
+        error = dict({"validate": "error"}, **form.errors)
         print(error)
         return json.dumps(error)
-
-
 
 
 @SecondHand_bp.route("/userRecord")
@@ -75,42 +73,19 @@ def SecondHand_userRecord():
     onSalse = session.query(Items).filter(Items.sellerID == current_user.id, Items.orderStatusId == 1)
     onTransaction = session.query(Items).filter(Items.sellerID == current_user.id, Items.orderStatusId.in_([2, 3, 5]))
     success = session.query(Items).filter(Items.sellerID == current_user.id, Items.orderStatusId.in_([4, 6]))
-
+    buyer_onTransaction = session.query(Items).filter(Items.buyerID == current_user.id,
+                                                      Items.orderStatusId.in_([2, 3, 5]))
+    buyer_success = session.query(Items).filter(Items.buyerID == current_user.id, Items.orderStatusId.in_([4, 6]))
     return render_template(
         "SecondHand_userRecord.html",
         myRelease=onSalse,
         user=current_user,
         onTransaction=onTransaction,
         success=success,
+        buyer_onTransaction=buyer_onTransaction,
+        buyer_success=buyer_success,
         id=id
     )
-
-
-@SecondHand_bp.route("/del_myRelease/<item>")
-def SecondHand_del_myRelease(item):
-    session = SecondHand.Session()
-    i: Items = session.query(Items).filter(Items.id == item).one()
-    item_del = Items_del(
-        prev_id=i.id,
-        items_name=i.items_name,
-        price=i.price,
-        sellerID=i.sellerID,
-        buyerID=i.buyerID,
-        post_date=i.post_date,
-        transaction_date=i.transaction_date,
-        main_picture_url=i.main_picture_url,
-        description=i.description,
-        orderStatusId=i.orderStatusId,
-        buyer_phone=i.buyer_phone,
-        buyer_email=i.buyer_email,
-        buyer_location=i.buyer_location,
-        buyer_comment=i.buyer_comment,
-        del_date=datetime.datetime.now())
-    session.add(item_del)
-    session.delete(i)
-    session.commit()
-    url = request.args.get("next_url")
-    return redirect(url)
 
 
 @SecondHand_bp.route("/SecondHand_mgmt")
@@ -144,8 +119,9 @@ def SecondHand_desc(item):
         i.buyer_comment = form.comment.data
         session.commit()
         # send message to seller
-        purchase_message = "系统自动发送\n{} 已下单 {} 商品，请您尽快与他联系\n买家的联系方式:\n手机:{}\nEmail:{}\n地址:{}\n留言:{}"\
-            .format(current_user.username, i.items_name, form.phone.data, form.email.data, form.location.data, form.comment.data)
+        purchase_message = "系统自动发送\n{} 已下单 {} 商品\n&#128230;买方的联系方式:\n手机: {}\nEmail: {}\n地址: {}\n留言: {}" \
+            .format(current_user.username, i.items_name, form.phone.data, form.email.data, form.location.data,
+                    form.comment.data)
         message_seller = Message(
             message=purchase_message,
             user_id=current_user.id
@@ -179,3 +155,55 @@ def SecondHand_desc(item):
         error = dict({"validate": "error"}, **form.errors)
         print(error)
         return json.dumps(error)
+
+
+# -----------------------------------
+#   Logic code (add, del, change order status)
+# -----------------------------------
+
+@SecondHand_bp.route("/del_myRelease/<item>")
+def SecondHand_del_myRelease(item):
+    session = SecondHand.Session()
+    i: Items = session.query(Items).filter(Items.id == item).one()
+    item_del = Items_del(
+        prev_id=i.id,
+        items_name=i.items_name,
+        price=i.price,
+        sellerID=i.sellerID,
+        buyerID=i.buyerID,
+        post_date=i.post_date,
+        start_transaction_date=i.start_transaction_date,
+        success_transaction_date=i.success_transaction_date,
+        main_picture_url=i.main_picture_url,
+        description=i.description,
+        orderStatusId=i.orderStatusId,
+        buyer_phone=i.buyer_phone,
+        buyer_email=i.buyer_email,
+        buyer_location=i.buyer_location,
+        buyer_comment=i.buyer_comment,
+        del_date=datetime.datetime.now())
+    session.add(item_del)
+    session.delete(i)
+    session.commit()
+    url = request.args.get("next_url")
+    return redirect(url)
+
+
+@SecondHand_bp.route("/buyer_success/<item>")
+def SecondHand_buyer_success(item):
+    session = SecondHand.Session()
+    i: Items = session.query(Items).filter(Items.id == item).one()
+    i.orderStatusId = 3
+    session.commit()
+    url = request.args.get("next_url")
+    return redirect(url)
+
+
+@SecondHand_bp.route("/seller_success/<item>")
+def SecondHand_seller_success(item):
+    session = SecondHand.Session()
+    i: Items = session.query(Items).filter(Items.id == item).one()
+    i.orderStatusId = 4
+    session.commit()
+    url = request.args.get("next_url")
+    return redirect(url)
