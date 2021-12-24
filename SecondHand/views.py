@@ -76,6 +76,7 @@ def SecondHand_userRecord():
     buyer_onTransaction = session.query(Items).filter(Items.buyerID == current_user.id,
                                                       Items.orderStatusId.in_([2, 3, 5]))
     buyer_success = session.query(Items).filter(Items.buyerID == current_user.id, Items.orderStatusId.in_([4, 6]))
+    tabTarget = request.args.get("tabTarget")
     return render_template(
         "SecondHand_userRecord.html",
         myRelease=onSalse,
@@ -84,6 +85,7 @@ def SecondHand_userRecord():
         success=success,
         buyer_onTransaction=buyer_onTransaction,
         buyer_success=buyer_success,
+        tabTarget=tabTarget,
         id=id
     )
 

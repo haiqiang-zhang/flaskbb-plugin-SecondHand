@@ -8,6 +8,12 @@
     </ol>
 {% endblock %}
 
+{% block javascript %}
+{% endblock %}
+
+
+
+
 {% block profile_content %}
     <main>
         <div class="d-flex align-items-start my-2">
@@ -32,7 +38,7 @@
                 <button class="nav-link m-1" id="button-buyer-ontransaction" data-bs-toggle="pill"
                         data-bs-target="#page-buyer-ontransaction" type="button" role="tab"
                         aria-controls="button-buyer-ontransaction"
-                        aria-selected="false">已下单
+                        aria-selected="false">正在交易
                 </button>
                 <button class="nav-link m-1" id="button-buyer-success" data-bs-toggle="pill"
                         data-bs-target="#page-buyer-success" type="button" role="tab" aria-controls="page-buyer-success"
@@ -69,7 +75,7 @@
                                             <button class="btn btn-primary me-md-2" type="button">修改</button>
                                             <button class="btn btn-danger" type="button" data-bs-toggle="modal"
                                                     data-bs-target="#confirmDel"
-                                                    data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord")) }}'"
+                                                    data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord", tabTarget = "#page-onsale")) }}'"
                                                     data-bs-itemName="{{ i.items_name }}">
                                                 删除
                                             </button>
@@ -131,15 +137,15 @@
                                             {% elif i.orderStatusId == 3 %}
                                                 <button class="btn btn-success" type="button" data-bs-toggle="modal"
                                                         data-bs-target="#confirm-seller-success"
-                                                        data-bs-Url="location.href='{{ url_for("SecondHand_bp.SecondHand_seller_success",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord")) }}'"
+                                                        data-bs-Url="location.href='{{ url_for("SecondHand_bp.SecondHand_seller_success",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord", tabTarget = "#page-ontransaction")) }}'"
                                                         data-bs-itemName="{{ i.items_name }}">
                                                     确认完成交易
                                                 </button>
                                             {% elif i.orderStatusId == 5 %}
                                                 <span class="text-danger fw-bold align-self-center">订单被买家取消，请联系买家，如同意买家取消请确认取消。</span>
                                                 <button class="btn btn-warning" type="button" data-bs-toggle="modal"
-                                                        data-bs-target="#confirmFinish"
-                                                        data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord")) }}'"
+                                                        data-bs-target=""
+                                                        data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord", tabTarget = "#page-ontransaction")) }}'"
                                                         data-bs-itemName="{{ i.items_name }}">
                                                     确认取消
                                                 </button>
@@ -187,14 +193,14 @@
                                             {% if i.orderStatusId == 6 %}
                                                 <button class="btn btn-primary" type="button" data-bs-toggle="modal"
                                                         data-bs-target=""
-                                                        data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord")) }}'"
+                                                        data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord", tabTarget = "#page-success")) }}'"
                                                         data-bs-itemName="{{ i.items_name }}">
                                                     修改并重新上架
                                                 </button>
                                             {% endif %}
                                             <button class="btn btn-danger" type="button" data-bs-toggle="modal"
                                                     data-bs-target="#confirmDel"
-                                                    data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord")) }}'"
+                                                    data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord", tabTarget = "#page-success")) }}'"
                                                     data-bs-itemName="{{ i.items_name }}">
                                                 删除
                                             </button>
@@ -244,20 +250,21 @@
                                             {% if i.orderStatusId == 2 %}
                                                 <button class="btn btn-success" type="button" data-bs-toggle="modal"
                                                         data-bs-target="#confirm-buyer-success"
-                                                        data-bs-Url="location.href='{{ url_for("SecondHand_bp.SecondHand_buyer_success",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord")) }}'"
+                                                        data-bs-Url="location.href='{{ url_for("SecondHand_bp.SecondHand_buyer_success",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord", tabTarget = "#page-buyer-ontransaction")) }}'"
                                                         data-bs-itemName="{{ i.items_name }}">
                                                     确认收货
                                                 </button>
                                             {% elif i.orderStatusId == 3 %}
+                                                <span class="text-danger fw-bold align-self-center">您已取消订单，请等待卖家处理，如有争议请联系论坛管理团队</span>
                                                 <button class="btn btn-secondary" type="button" data-bs-toggle="modal"
-                                                        data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord")) }}'"
+                                                        data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord", tabTarget = "#page-buyer-ontransaction")) }}'"
                                                         data-bs-itemName="{{ i.items_name }}" disabled>
                                                     等待卖家确认
                                                 </button>
                                             {% elif i.orderStatusId == 5 %}
                                                 <span class="text-danger fw-bold align-self-center">您已取消订单，请等待卖家处理，如有争议请联系论坛管理团队</span>
                                                 <button class="btn btn-secondary" type="button" data-bs-toggle="modal"
-                                                        data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord")) }}'"
+                                                        data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord", tabTarget = "#page-buyer-ontransaction")) }}'"
                                                         data-bs-itemName="{{ i.items_name }}" disabled>
                                                     等待卖家处理
                                                 </button>
@@ -306,15 +313,13 @@
                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                             {% if i.orderStatusId == 6 %}
                                                 <button class="btn btn-primary" type="button" data-bs-toggle="modal"
-                                                        data-bs-target=""
-                                                        data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord")) }}'"
-                                                        data-bs-itemName="{{ i.items_name }}">
+                                                        data-bs-target="">
                                                     修改并重新上架
                                                 </button>
                                             {% endif %}
                                             <button class="btn btn-danger" type="button" data-bs-toggle="modal"
                                                     data-bs-target="#confirmDel"
-                                                    data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord")) }}'"
+                                                    data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord", tabTarget="#page-buyer-success")) }}'"
                                                     data-bs-itemName="{{ i.items_name }}">
                                                 删除
                                             </button>
@@ -396,11 +401,17 @@
 
     <script src="{{ url_for('SecondHand_bp.static', filename='bootstrap.js') }}"></script>
     <script>
-
-        var TabEl = document.querySelector('#userRecord-pills-tab button[data-bs-target="#page-ontransaction"]')
+        // the first activate tab when direct to the page
+        {% if tabTarget is none %}
+        var TabEl = document.querySelector('#userRecord-pills-tab button[data-bs-target="#page-onsale"]')
+        {% else %}
+        var TabEl = document.querySelector('#userRecord-pills-tab button[data-bs-target="{{ tabTarget }}"]')
+        {% endif %}
         var firstTab = new bootstrap.Tab(TabEl)
         firstTab.show()
 
+
+        // delete frontend logic
         var confirmDel = document.getElementById('confirmDel')
         confirmDel.addEventListener('show.bs.modal', function (event) {
             // Button that triggered the modal
@@ -414,6 +425,8 @@
             modalTitle.textContent = name
         })
 
+
+        // buyer success confirmation frontend logic
         var confirm_buyer_success = document.getElementById('confirm-buyer-success')
         confirm_buyer_success.addEventListener('show.bs.modal', function (event) {
             // Button that triggered the modal
@@ -427,6 +440,7 @@
             modalTitle.textContent = name
         })
 
+        // seller success confirmation frontend logic
         var confirm_seller_success = document.getElementById('confirm-seller-success')
         confirm_seller_success.addEventListener('show.bs.modal', function (event) {
             // Button that triggered the modal
