@@ -23,14 +23,16 @@ __version__ = "0.1.0"
 hookimpl = HookimplMarker("flaskbb")
 Session = None
 
+
 def available_forums():
     forums = Forum.query.order_by(Forum.id.asc()).all()
     return [(forum.id, forum.title) for forum in forums]
 
 @hookimpl
 def flaskbb_extensions(app):
-    global Session
+    global Session, upload_path
     Session = connect_database(app)
+
 
 
 

@@ -19,7 +19,7 @@
                         <div class="card">
                             <a href="{{ url_for("SecondHand_bp.SecondHand_desc", item=i.id) }}">
                                 <div class="align-items-center" style="overflow: hidden; height: 350px;">
-                                    <img src="{{ i.main_picture_url }}" class="img-thumbnail"/>
+                                    <img src="{{ url_for("SecondHand_bp.static", filename=i.main_picture_url) }}" class="img-thumbnail"/>
                                 </div>
                                 <div class="card-body">
                                     <h5 class="card-title">{{ i.items_name }}</h5>
@@ -57,19 +57,6 @@
 
                 <div id="ReleaseMessage">
                 </div>
-
-                {#                {% for field, errors in form.errors.items() %}#}
-                {#                    <div class="alert alert-danger d-flex align-items-center m-2 alert-dismissible fade show"#}
-                {#                         role="alert">#}
-                {#                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">#}
-                {#                            <use xlink:href="#exclamation-triangle-fill"/>#}
-                {#                        </svg>#}
-                {#                        {{ errors[1] }}#}
-                {#                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>#}
-                {#                    </div>#}
-                {#                {% endfor %}#}
-
-
                 <form action="{{ handler_url }}" method="post" id="ReleaseItemsForm">
                     {{ form.csrf_token }}
 
@@ -83,17 +70,20 @@
                             {{ form.price(class="form-control" ) }}
                         </div>
                         <div class="mb-3">
-                            <label for="message-text" class="col-form-label">物品图片URL</label>
-                            {{ form.main_picture_url(class="form-control" ) }}
+                            <label for="message-text" class="col-form-label">上传图片</label>
+                            {{ form.main_picture(class="form-control") }}
                         </div>
                         <div class="mb-3">
                             <label for="message-text" class="col-form-label">描述</label>
                             {{ form.desc(class="form-control" ) }}
                         </div>
+
                     </div>
+
                     <div class="modal-footer">
                         <button class="btn btn-primary btn-lg" id="releaseButton">发布</button>
                     </div>
+
                 </form>
 
 

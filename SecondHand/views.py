@@ -7,8 +7,8 @@
 
 """
 import json
-
-from flask import Blueprint, current_app, flash, request, g, redirect, url_for, jsonify
+import os
+from flask import Blueprint, current_app, flash, request, g, redirect, url_for, jsonify, send_from_directory
 from flask_babelplus import gettext as _
 from flask_login import current_user, login_fresh
 
@@ -50,11 +50,15 @@ def SecondHand_index():
             form=form
         )
     if form.validate_on_submit():
+        f = form.main_picture.data
+        filename = "{}-{}-{}.{}".format(current_user.id, form.items_name.data,datetime.datetime.now(), f.filename.rsplit('.', 1)[1])
+        f.save(os.path.join(os.path.dirname(__file__), "static/upload_file/image/item_main_picture",filename))
+        file_path = os.path.join('upload_file/image/item_main_picture', filename)
         item = Items(items_name=form.items_name.data,
                      price=float(form.price.data),
                      sellerID=user_id,
                      description=form.desc.data,
-                     main_picture_url=form.main_picture_url.data,
+                     main_picture_url=file_path,
                      post_date=datetime.datetime.now(),
                      orderStatusId=1)
         session = SecondHand.Session()
