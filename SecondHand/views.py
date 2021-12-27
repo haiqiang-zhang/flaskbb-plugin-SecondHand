@@ -160,9 +160,8 @@ def SecondHand_desc(item):
 
 
 # -----------------------------------
-#   Logic code (add, del, change order status)
+#   change items status or del
 # -----------------------------------
-
 @SecondHand_bp.route("/del_myRelease/<item>")
 def SecondHand_del_myRelease(item):
     session = SecondHand.Session()
@@ -207,5 +206,87 @@ def SecondHand_seller_success(item):
     i: Items = session.query(Items).filter(Items.id == item).one()
     i.orderStatusId = 4
     session.commit()
+    url = request.args.get("next_url")
+    return redirect(url)
+
+
+@SecondHand_bp.route("/buyer_cancel/<item>")
+def SecondHand_buyer_cancel(item):
+    session = SecondHand.Session()
+    i: Items = session.query(Items).filter(Items.id == item).one()
+    i.orderStatusId = 5
+    session.commit()
+    # send message to seller
+    purchase_message = "系统自动发送\n&#10071;{} 已取消购买 {} 商品\n请尽快与买家联系，如有争议请联系论坛管理团队"\
+        .format(current_user.username, i.items_name)
+    message_seller = Message(
+        message=purchase_message,
+        user_id=current_user.id
+    )
+    conversation_seller = Conversation(
+        subject=current_user.username + " 已取消购买 " + i.items_name,
+        draft=False,
+        shared_id=uuid.uuid4(),
+        from_user_id=current_user.id,
+        to_user_id=i.sellerID,
+        user_id=i.sellerID,
+        unread=True,
+    )
+    conversation_seller.save(message=message_seller)
+    message_buyer = Message(
+        message=purchase_message,
+        user_id=current_user.id
+    )
+    conversation_buyer = Conversation(
+        subject=current_user.username + " 已取消购买 " + i.items_name,
+        draft=False,
+        shared_id=uuid.uuid4(),
+        from_user_id=current_user.id,
+        to_user_id=i.sellerID,
+        user_id=current_user.id,
+        unread=False,
+    )
+    conversation_buyer.save(message=message_buyer)
+    url = request.args.get("next_url")
+    return redirect(url)
+
+
+@SecondHand_bp.route("/seller_cancel/<item>")
+def SecondHand_seller_cancel(item):
+    session = SecondHand.Session()
+    i: Items = session.query(Items).filter(Items.id == item).one()
+    i.orderStatusId = 6
+    session.commit()
+    # send message to seller
+    purchase_message = "系统自动发送\n&#9989;您取消购买的 {} 商品，卖家已确认取消，交易完成"\
+        .format(i.items_name)
+    message_seller = Message(
+        message=purchase_message,
+        user_id=current_user.id
+    )
+    conversation_seller = Conversation(
+        subject="卖家已确认取消 " + i.items_name,
+        draft=False,
+        shared_id=uuid.uuid4(),
+        from_user_id=current_user.id,
+        to_user_id=i.buyerID,
+        user_id=i.buyerID,
+        unread=True,
+    )
+    conversation_seller.save(message=message_seller)
+    message_buyer = Message(
+        message=purchase_message,
+        user_id=current_user.id
+    )
+    conversation_buyer = Conversation(
+        subject="买家已确认取消 " + i.items_name,
+        draft=False,
+        shared_id=uuid.uuid4(),
+        from_user_id=current_user.id,
+        to_user_id=i.buyerID,
+        user_id=current_user.id,
+        unread=False,
+    )
+    conversation_buyer.save(message=message_buyer)
     url = request.args.get("next_url")
     return redirect(url)
