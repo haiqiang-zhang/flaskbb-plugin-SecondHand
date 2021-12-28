@@ -20,10 +20,12 @@ from flaskbb.utils.helpers import time_diff, get_online_users
 from flaskbb.utils.settings import flaskbb_config
 import SecondHand
 import datetime
-from .form import ReleaseItemsForm, PurchaseItemsForm
+from .form import ReleaseItemsForm, PurchaseItemsForm, ChangeItemsForm
 from conversations.models import Conversation, Message
 import uuid
 from .model import Items, Items_del
+from .helper import upload_item_picture
+from flask_wtf.file import FileStorage
 
 SecondHand_bp = Blueprint("SecondHand_bp", __name__, template_folder="templates", static_folder="static")
 
@@ -50,10 +52,12 @@ def SecondHand_index():
             form=form
         )
     if form.validate_on_submit():
-        f = form.main_picture.data
-        filename = "{}-{}-{}.{}".format(current_user.id, form.items_name.data,datetime.datetime.now(), f.filename.rsplit('.', 1)[1])
-        f.save(os.path.join(os.path.dirname(__file__), "static/upload_file/image/item_main_picture",filename))
-        file_path = os.path.join('upload_file/image/item_main_picture', filename)
+        path = os.path.join(os.path.dirname(__file__), "static/upload_file/image/item_main_picture")
+        file_path = upload_item_picture(
+            path,
+            form.main_picture.data,
+            current_user.id,
+            form.items_name.data)
         item = Items(items_name=form.items_name.data,
                      price=float(form.price.data),
                      sellerID=user_id,
@@ -74,13 +78,15 @@ def SecondHand_index():
 @SecondHand_bp.route("/userRecord")
 def SecondHand_userRecord():
     session = SecondHand.Session()
-    onSalse = session.query(Items).filter(Items.sellerID == current_user.id, Items.orderStatusId == 1)
-    onTransaction = session.query(Items).filter(Items.sellerID == current_user.id, Items.orderStatusId.in_([2, 3, 5]))
-    success = session.query(Items).filter(Items.sellerID == current_user.id, Items.orderStatusId.in_([4, 6]))
+    onSalse = session.query(Items).filter(Items.sellerID == current_user.id, Items.orderStatusId == 1).all()
+    onTransaction = session.query(Items).filter(Items.sellerID == current_user.id,
+                                                Items.orderStatusId.in_([2, 3, 5])).all()
+    success = session.query(Items).filter(Items.sellerID == current_user.id, Items.orderStatusId.in_([4, 6])).all()
     buyer_onTransaction = session.query(Items).filter(Items.buyerID == current_user.id,
-                                                      Items.orderStatusId.in_([2, 3, 5]))
-    buyer_success = session.query(Items).filter(Items.buyerID == current_user.id, Items.orderStatusId.in_([4, 6]))
+                                                      Items.orderStatusId.in_([2, 3, 5])).all()
+    buyer_success = session.query(Items).filter(Items.buyerID == current_user.id, Items.orderStatusId.in_([4, 6])).all()
     tabTarget = request.args.get("tabTarget")
+    form_change = ChangeItemsForm()
     return render_template(
         "SecondHand_userRecord.html",
         myRelease=onSalse,
@@ -90,6 +96,7 @@ def SecondHand_userRecord():
         buyer_onTransaction=buyer_onTransaction,
         buyer_success=buyer_success,
         tabTarget=tabTarget,
+        form_change=form_change,
         id=id
     )
 
@@ -107,13 +114,15 @@ def SecondHand_desc(item):
     i: Items = session.query(Items).filter(Items.id == item).one()
     user = User.query.filter(i.sellerID == User.id).one()
     form = PurchaseItemsForm()
+    form_change = ChangeItemsForm()
     if request.method == 'GET':
         return render_template(
             "SecondHand_itemsDesc.html",
             item=i,
             user=user,
             request=request,
-            form=form
+            form=form,
+            form_change=form_change
         )
     if form.validate_on_submit():
         i.buyerID = current_user.id
@@ -164,7 +173,7 @@ def SecondHand_desc(item):
 
 
 # -----------------------------------
-#   change items status or del
+#   change items or del
 # -----------------------------------
 @SecondHand_bp.route("/del_myRelease/<item>")
 def SecondHand_del_myRelease(item):
@@ -221,7 +230,7 @@ def SecondHand_buyer_cancel(item):
     i.orderStatusId = 5
     session.commit()
     # send message to seller
-    purchase_message = "系统自动发送\n&#10071;{} 已取消购买 {} 商品\n请尽快与买家联系，如有争议请联系论坛管理团队"\
+    purchase_message = "系统自动发送\n&#10071;{} 已取消购买 {} 商品\n请尽快与买家联系，如有争议请联系论坛管理团队" \
         .format(current_user.username, i.items_name)
     message_seller = Message(
         message=purchase_message,
@@ -262,7 +271,7 @@ def SecondHand_seller_cancel(item):
     i.orderStatusId = 6
     session.commit()
     # send message to seller
-    purchase_message = "系统自动发送\n&#9989;您取消购买的 {} 商品，卖家已确认取消，交易完成"\
+    purchase_message = "系统自动发送\n&#9989;您取消购买的 {} 商品，卖家已确认取消，交易完成" \
         .format(i.items_name)
     message_seller = Message(
         message=purchase_message,
@@ -294,3 +303,39 @@ def SecondHand_seller_cancel(item):
     conversation_buyer.save(message=message_buyer)
     url = request.args.get("next_url")
     return redirect(url)
+
+
+@SecondHand_bp.route("/change_item/<item>", methods=['GET', 'POST'])
+def SecondHand_change_item(item):
+    session = SecondHand.Session()
+    form = ChangeItemsForm()
+    i: Items = session.query(Items).filter(Items.id == item).one()
+
+    if all([form.items_name.data == "",
+            form.price.data == "",
+            form.desc.data == "",
+            not (isinstance(form.main_picture.data, FileStorage) and form.main_picture.data)]):
+        error = dict({"validate": "error", "notChange": "请输入需要修改的对应项"})
+        print(error)
+        return json.dumps(error)
+    elif form.validate_on_submit():
+        if form.items_name.data != "":
+            i.items_name = form.items_name.data
+        if form.price.data != "":
+            i.price = float(form.price.data)
+        if form.desc.data != "":
+            i.description = form.desc.data
+        if isinstance(form.main_picture.data, FileStorage) and form.main_picture.data:
+            file_path = upload_item_picture(
+                os.path.join(os.path.dirname(__file__), "static/upload_file/image/item_main_picture"),
+                form.main_picture.data,
+                current_user.id,
+                form.items_name.data)
+            i.main_picture_url = file_path
+        i.orderStatusId = 1
+        session.commit()
+        return json.dumps({"validate": "success"})
+    else:
+        error = dict({"validate": "error"}, **form.errors)
+        print(error)
+        return json.dumps(error)

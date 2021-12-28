@@ -18,9 +18,18 @@
                     <div class="col">
                         <div class="card">
                             <a href="{{ url_for("SecondHand_bp.SecondHand_desc", item=i.id) }}">
-                                <div class="align-items-center" style="overflow: hidden; height: 350px;">
-                                    <img src="{{ url_for("SecondHand_bp.static", filename=i.main_picture_url) }}" class="img-thumbnail"/>
-                                </div>
+
+                                {% if i.main_picture_url is none %}
+                                    <div class="row align-items-center" style="overflow: hidden; height: 350px;">
+                                        <div class="col"><h4 class="text-secondary text-center">无图片</h4></div>
+                                    </div>
+                                {% else %}
+                                    <div class="align-items-center" style="overflow: hidden; height: 350px;">
+                                        <img src="{{ url_for("SecondHand_bp.static", filename=i.main_picture_url) }}"
+                                             class="img-thumbnail"/>
+                                    </div>
+                                {% endif %}
+
                                 <div class="card-body">
                                     <h5 class="card-title">{{ i.items_name }}</h5>
                                     <p class="card-text">¥{{ i.price }}</p>
@@ -83,13 +92,14 @@
                     <div class="modal-footer">
                         <button class="btn btn-primary btn-lg" id="releaseButton">发布</button>
                     </div>
-
                 </form>
-
-
             </div>
         </div>
     </div>
+
+
+
+
     <script>
         var ReleaseItemsModal = document.getElementById('ReleaseItemsModal')
         ReleaseItemsModal.addEventListener('show.bs.modal', function (event) {

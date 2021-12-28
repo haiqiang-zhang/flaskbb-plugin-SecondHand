@@ -7,6 +7,9 @@
         <li class="breadcrumb-item active">{% trans %}二手交易{% endtrans %}</li>
     </ol>
 {% endblock %}
+{% block head_extra %}
+    <script src="{{ url_for('SecondHand_bp.static', filename='jquery-3.6.0.min.js') }}"></script>
+{% endblock %}
 
 <!--disable the js of flaskbb-->
 {% block javascript %}
@@ -40,6 +43,9 @@
                             data-bs-target="#page-ontransaction" type="button" role="tab"
                             aria-controls="botton-on-transaction"
                             aria-selected="false" onclick="hideOffcanvasCategory()">正在交易
+                        {% if onTransaction|length != 0 %}
+                            <span class="badge bg-danger p-1">{{ onTransaction|length }}</span>
+                        {% endif %}
                     </button>
                     <button class="nav-link m-1" id="button-success" data-bs-toggle="pill"
                             data-bs-target="#page-success" type="button" role="tab" aria-controls="button-success"
@@ -50,6 +56,9 @@
                             data-bs-target="#page-buyer-ontransaction" type="button" role="tab"
                             aria-controls="button-buyer-ontransaction"
                             aria-selected="false" onclick="hideOffcanvasCategory()">正在交易
+                        {% if onTransaction|length != 0 %}
+                            <span class="badge bg-danger p-1">{{ onTransaction|length }}</span>
+                        {% endif %}
                     </button>
                     <button class="nav-link m-1" id="button-buyer-success" data-bs-toggle="pill"
                             data-bs-target="#page-buyer-success" type="button" role="tab"
@@ -71,10 +80,14 @@
                         data-bs-target="#page-onsale" type="button" role="tab" aria-controls="button-onsale"
                         aria-selected="true">我的发布
                 </button>
+
                 <button class="nav-link m-1 px-3 w-100" id="button-ontransaction" data-bs-toggle="pill"
                         data-bs-target="#page-ontransaction" type="button" role="tab"
                         aria-controls="botton-on-transaction"
                         aria-selected="false">正在交易
+                    {% if onTransaction|length != 0 %}
+                        <span class="badge bg-danger p-1">{{ onTransaction|length }}</span>
+                    {% endif %}
                 </button>
                 <button class="nav-link m-1 px-3 w-100" id="button-success" data-bs-toggle="pill"
                         data-bs-target="#page-success" type="button" role="tab" aria-controls="button-success"
@@ -85,6 +98,9 @@
                         data-bs-target="#page-buyer-ontransaction" type="button" role="tab"
                         aria-controls="button-buyer-ontransaction"
                         aria-selected="false">正在交易
+                    {% if onTransaction|length != 0 %}
+                        <span class="badge bg-danger p-1">{{ onTransaction|length }}</span>
+                    {% endif %}
                 </button>
                 <button class="nav-link m-1 px-3 w-100" id="button-buyer-success" data-bs-toggle="pill"
                         data-bs-target="#page-buyer-success" type="button" role="tab" aria-controls="page-buyer-success"
@@ -113,10 +129,16 @@
                                 <div id="flush-items-{{ id(i) }}" class="accordion-collapse collapse"
                                      data-bs-parent="#accordionFlush-onsalse">
                                     <div class="accordion-body">
-                                        <h4 class="text-secondary">描述</h4>
-                                        <p>&nbsp;{{ i.description }}</p>
+                                        <a class="text-primary h4"
+                                           href="{{ url_for("SecondHand_bp.SecondHand_desc", item=i.id) }}">商品详情页</a>
                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                            <button class="btn btn-primary me-md-2" type="button">修改</button>
+                                            <button class="btn btn-primary me-md-2" type="button" data-bs-toggle="modal"
+                                                    data-bs-target="#ChangeItemModal"
+                                                    data-bs-title="{{ "修改物品 " + i.items_name }}"
+                                                    data-bs-url="{{ url_for('SecondHand_bp.SecondHand_change_item',item=i.id) }}"
+                                                    data-bs-next-url="{{ url_for('SecondHand_bp.SecondHand_userRecord', tabTarget = '#page-onsale') }}">
+                                                修改
+                                            </button>
                                             <button class="btn btn-danger" type="button" data-bs-toggle="modal"
                                                     data-bs-target="#confirmDel"
                                                     data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord", tabTarget = "#page-onsale")) }}'"
@@ -162,13 +184,13 @@
                                      aria-labelledby="flush-heading-{{ id(i) }}"
                                      data-bs-parent="#accordionFlush-ontransaction">
                                     <div class="accordion-body">
-                                        <h4 class="text-primary">买家信息</h4>
+                                        <h4 class="text-secondary">买家信息</h4>
                                         <p>&nbsp;<span class="fw-bold text-muted ">手机号</span> {{ i.buyer_phone }}</p>
                                         <p>&nbsp;<span class="fw-bold text-muted ">Email</span> {{ i.buyer_email }}</p>
                                         <p>&nbsp;<span class="fw-bold text-muted ">地址</span> {{ i.buyer_location }}</p>
                                         <p>&nbsp;<span class="fw-bold text-muted ">留言</span> {{ i.buyer_comment }}</p>
-                                        <h4 class="text-secondary">描述</h4>
-                                        <p>&nbsp;{{ i.description }}</p>
+                                        <a class="text-primary h4"
+                                           href="{{ url_for("SecondHand_bp.SecondHand_desc", item=i.id) }}">商品详情页</a>
                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                             {% if i.orderStatusId == 2 %}
                                                 <span class="text-secondary fw-bold align-self-center">买家收货后，需要您确认完成交易(双向确认)</span>
@@ -225,7 +247,8 @@
                                 <div id="success-flush-items-{{ id(i) }}" class="accordion-collapse collapse"
                                      data-bs-parent="#accordionFlush-success">
                                     <div class="accordion-body">
-                                        <p>{{ i.description }}</p>
+                                        <a class="text-primary h4"
+                                           href="{{ url_for("SecondHand_bp.SecondHand_desc", item=i.id) }}">商品详情页</a>
                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                             {% if i.orderStatusId == 6 %}
                                                 <button class="btn btn-primary" type="button" data-bs-toggle="modal"
@@ -278,7 +301,8 @@
                                      class="accordion-collapse collapse"
                                      data-bs-parent="#accordionFlush-buyer-ontransaction">
                                     <div class="accordion-body">
-                                        <p>{{ i.description }}</p>
+                                        <a class="text-primary h4"
+                                           href="{{ url_for("SecondHand_bp.SecondHand_desc", item=i.id) }}">商品详情页</a>
                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                             {% if i.orderStatusId == 2 %}
                                                 <button class="btn btn-success" type="button" data-bs-toggle="modal"
@@ -343,7 +367,8 @@
                                 <div id="buyer-success-flush-items-{{ id(i) }}" class="accordion-collapse collapse"
                                      data-bs-parent="#accordionFlush-buyer-success">
                                     <div class="accordion-body">
-                                        <p>{{ i.description }}</p>
+                                        <a class="text-primary h4"
+                                           href="{{ url_for("SecondHand_bp.SecondHand_desc", item=i.id) }}">商品详情页</a>
                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                             {% if i.orderStatusId == 6 %}
                                                 <button class="btn btn-primary" type="button" data-bs-toggle="modal"
@@ -369,7 +394,7 @@
     </main>
 
 
-    <!--确认删除弹窗-->
+    <!--确认删除Modal-->
     <div class="modal fade" tabindex="-1" id="confirmDel">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -391,7 +416,7 @@
     </div>
 
 
-    <!--买家确认收货弹窗-->
+    <!--买家确认收货Modal-->
     <div class="modal fade" tabindex="-1" id="confirm-buyer-success">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -413,7 +438,7 @@
     </div>
 
 
-    <!--卖家确认完成交易（订单完结）弹窗-->
+    <!--卖家确认完成交易（订单完结）Modal-->
     <div class="modal fade" tabindex="-1" id="confirm-seller-success">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -435,7 +460,7 @@
     </div>
 
 
-    <!--买家取消订单弹窗-->
+    <!--买家取消订单Modal-->
     <div class="modal fade" tabindex="-1" id="cancel-buyer">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -457,7 +482,7 @@
     </div>
 
 
-    <!--卖家确认取消（订单完结）弹窗-->
+    <!--卖家确认取消（订单完结）Modal-->
     <div class="modal fade" tabindex="-1" id="cancel-seller">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -474,6 +499,47 @@
                         确认取消
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!--修改物品Model-->
+    <div class="modal fade" id="ChangeItemModal" tabindex="-1" aria-labelledby="ChangeItemModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">修改物品</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div id="ReleaseMessage">
+                </div>
+                <p class="text-warning fw-bold text-center p-1 m-1">仅输入需要修改的项</p>
+                <form method="post" action=""
+                      id="ChangeItemsForm">
+                    {{ form_change.csrf_token }}
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="recipient-name" class="col-form-label">物品名称</label>
+                            {{ form_change.items_name(class="form-control" ) }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="message-text" class="col-form-label">价格</label>
+                            {{ form_change.price(class="form-control" ) }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="message-text" class="col-form-label">上传图片</label>
+                            {{ form_change.main_picture(class="form-control") }}
+                        </div>
+                        <div class="mb-3">
+                            <label for="message-text" class="col-form-label">描述</label>
+                            {{ form_change.desc(class="form-control" ) }}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary btn-lg" id="ChangeButton">修改</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -567,9 +633,77 @@
         })
 
 
+        // change items
+        var change_items = document.getElementById('ChangeItemModal')
+        change_items.addEventListener('show.bs.modal', function (event) {
+            // Button that triggered the modal
+            var button = event.relatedTarget
+
+            var name = button.getAttribute('data-bs-title')
+            var modalTitle = change_items.querySelector('.modal-title')
+            modalTitle.textContent = name
+
+            var url = button.getAttribute('data-bs-url')
+            var next_url = button.getAttribute('data-bs-next-url')
+            var ChangeItemsForm = change_items.querySelector('#ChangeItemsForm')
+            ChangeItemsForm.setAttribute("action", url)
+
+            //transform form data
+            $("#ChangeButton").on("click", function (event) {
+                event.preventDefault();
+                var form = new FormData(document.getElementById("ChangeItemsForm"));
+                $.ajax({
+                    url: url,
+                    type: "post",
+                    data: form,
+                    dataType: 'json',
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response["validate"] === "success") {
+                            location.href = next_url;
+                        } else if (response["validate"] === "error") {
+                            var html = ""
+                            for (var i in response) {
+                                if (i !== "validate") {
+                                    html += `<div class="alert alert-danger d-flex align-items-center m-2 alert-dismissible fade show" role="alert">
+                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+                            <use xlink:href="#exclamation-triangle-fill"/>
+                        </svg>
+                        ${response[i]}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`
+                                }
+                            }
+                            document.getElementById('ReleaseMessage').innerHTML = html
+                        } else {
+                            document.getElementById('ReleaseMessage').innerHTML = `<div class="alert alert-danger d-flex align-items-center m-2 alert-dismissible fade show" role="alert">
+                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+                            <use xlink:href="#exclamation-triangle-fill"/>
+                        </svg>
+                        修改失败，请重试！
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`
+                        }
+                    },
+                    error: function (response) {
+                        document.getElementById('ReleaseMessage').innerHTML = `<div class="alert alert-danger d-flex align-items-center m-2 alert-dismissible fade show" role="alert">
+                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:">
+                            <use xlink:href="#exclamation-triangle-fill"/>
+                        </svg>
+                        修改失败，请重试！
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`
+                    }
+                })
+            })
+        })
+
+
         //hide offcanvas
         var myOffcanvas = document.getElementById('offcanvas-category')
         var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas)
+
         function hideOffcanvasCategory() {
             bsOffcanvas.hide();
         }
