@@ -76,7 +76,10 @@
                         </div>
                         <div class="mb-3">
                             <label for="message-text" class="col-form-label">价格*</label>
-                            {{ form.price(class="form-control" ) }}
+                            <div class="input-group mb-3">
+                                <span class="input-group-text">¥</span>
+                                {{ form.price(class="form-control" ) }}
+                            </div>
                         </div>
                         <div class="mb-3">
                             <label for="message-text" class="col-form-label">上传图片</label>
