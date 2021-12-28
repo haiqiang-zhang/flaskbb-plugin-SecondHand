@@ -21,11 +21,22 @@ class PurchaseItemsForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
+def is_float(data):
+    try:
+        float(data)
+    except:
+        return False
+    return True
+
 def numberRange_or_null_check(form, field):
     data:str = field.data
     min = 0
-    if (data != "" and not data.isdigit()) or (data != "" and data is not None and float(data) < min):
+    if (data != "" and not is_float(data)) or (data != "" and data is not None and float(data) < min):
         raise ValidationError("请输入正确的价格（只能包含数字且大于等于0）")
+
+
+
+
 
 
 class ChangeItemsForm(FlaskForm):
