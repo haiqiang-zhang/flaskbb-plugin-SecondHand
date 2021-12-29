@@ -8,11 +8,13 @@
 """
 import json
 import os
+from flask_allows import Permission
 from flask import Blueprint, current_app, flash, request, g, redirect, url_for, jsonify, send_from_directory
 from flask_babelplus import gettext as _
 from flask_login import current_user, login_fresh
-
-from flaskbb.utils.helpers import render_template
+from flaskbb.extensions import allows
+from flaskbb.utils.requirements import IsAdmin
+from flaskbb.utils.helpers import render_template, FlashAndRedirect
 from flaskbb.forum.models import Topic, Post, Forum
 from flaskbb.user.models import User, Group
 from flaskbb.plugins.models import PluginRegistry
@@ -24,7 +26,7 @@ from .form import ReleaseItemsForm, PurchaseItemsForm, ChangeItemsForm
 from conversations.models import Conversation, Message
 import uuid
 from .model import Items, Items_del
-from .helper import upload_item_picture
+from .helper import upload_item_picture, no_right, exception_process
 from flask_wtf.file import FileStorage
 
 SecondHand_bp = Blueprint("SecondHand_bp", __name__, template_folder="templates", static_folder="static")
@@ -37,7 +39,7 @@ def check_fresh_login():
     if not login_fresh():
         return current_app.login_manager.needs_refresh()
 
-
+@exception_process
 @SecondHand_bp.route("/", methods=['GET', 'POST'])
 def SecondHand_index():
     session = SecondHand.Session()
@@ -74,7 +76,7 @@ def SecondHand_index():
         print(error)
         return json.dumps(error)
 
-
+@exception_process
 @SecondHand_bp.route("/userRecord")
 def SecondHand_userRecord():
     session = SecondHand.Session()
@@ -100,14 +102,7 @@ def SecondHand_userRecord():
         id=id
     )
 
-
-@SecondHand_bp.route("/SecondHand_mgmt")
-def SecondHand_mgmt():
-    return render_template(
-        "SecondHand_mgmt.html"
-    )
-
-
+@exception_process
 @SecondHand_bp.route("/SecondHand_desc/<item>", methods=['GET', 'POST'])
 def SecondHand_desc(item):
     session = SecondHand.Session()
@@ -175,54 +170,69 @@ def SecondHand_desc(item):
 # -----------------------------------
 #   change items or del
 # -----------------------------------
+@exception_process
 @SecondHand_bp.route("/del_myRelease/<item>")
 def SecondHand_del_myRelease(item):
     session = SecondHand.Session()
     i: Items = session.query(Items).filter(Items.id == item).one()
-    item_del = Items_del(
-        prev_id=i.id,
-        items_name=i.items_name,
-        price=i.price,
-        sellerID=i.sellerID,
-        buyerID=i.buyerID,
-        post_date=i.post_date,
-        start_transaction_date=i.start_transaction_date,
-        success_transaction_date=i.success_transaction_date,
-        main_picture_url=i.main_picture_url,
-        description=i.description,
-        orderStatusId=i.orderStatusId,
-        buyer_phone=i.buyer_phone,
-        buyer_email=i.buyer_email,
-        buyer_location=i.buyer_location,
-        buyer_comment=i.buyer_comment,
-        del_date=datetime.datetime.now())
-    session.add(item_del)
-    session.delete(i)
-    session.commit()
+    if i.orderStatusId in [6,4] and current_user.id == i.sellerID:
+        i.sellerID = None
+        session.commit()
+    elif i.orderStatusId in [6,4] and current_user.id == i.buyerID:
+        i.buyerID = None
+        session.commit()
+    elif (i.orderStatusId == 1 and current_user.id == i.sellerID) or Permission(IsAdmin, identity=current_user):
+        item_del = Items_del(
+            prev_id=i.id,
+            items_name=i.items_name,
+            price=i.price,
+            sellerID=i.sellerID,
+            buyerID=i.buyerID,
+            post_date=i.post_date,
+            start_transaction_date=i.start_transaction_date,
+            success_transaction_date=i.success_transaction_date,
+            main_picture_url=i.main_picture_url,
+            description=i.description,
+            orderStatusId=i.orderStatusId,
+            buyer_phone=i.buyer_phone,
+            buyer_email=i.buyer_email,
+            buyer_location=i.buyer_location,
+            buyer_comment=i.buyer_comment,
+            del_date=datetime.datetime.now())
+        session.add(item_del)
+        session.delete(i)
+        session.commit()
+    else:
+        no_right()
     url = request.args.get("next_url")
     return redirect(url)
 
-
+@exception_process
 @SecondHand_bp.route("/buyer_success/<item>")
 def SecondHand_buyer_success(item):
     session = SecondHand.Session()
     i: Items = session.query(Items).filter(Items.id == item).one()
-    i.orderStatusId = 3
-    session.commit()
-    url = request.args.get("next_url")
+    if current_user.id == i.buyerID:
+        i.orderStatusId = 3
+        session.commit()
+        url = request.args.get("next_url")
+    else:
+        session.close()
+        no_right()
     return redirect(url)
 
-
+@exception_process
 @SecondHand_bp.route("/seller_success/<item>")
 def SecondHand_seller_success(item):
-    session = SecondHand.Session()
-    i: Items = session.query(Items).filter(Items.id == item).one()
-    i.orderStatusId = 4
-    session.commit()
+    if current_user.id == i.sellerID:
+        session = SecondHand.Session()
+        i: Items = session.query(Items).filter(Items.id == item).one()
+        i.orderStatusId = 4
+        session.commit()
     url = request.args.get("next_url")
     return redirect(url)
 
-
+@exception_process
 @SecondHand_bp.route("/buyer_cancel/<item>")
 def SecondHand_buyer_cancel(item):
     session = SecondHand.Session()
@@ -263,7 +273,7 @@ def SecondHand_buyer_cancel(item):
     url = request.args.get("next_url")
     return redirect(url)
 
-
+@exception_process
 @SecondHand_bp.route("/seller_cancel/<item>")
 def SecondHand_seller_cancel(item):
     session = SecondHand.Session()
@@ -292,7 +302,7 @@ def SecondHand_seller_cancel(item):
         user_id=current_user.id
     )
     conversation_buyer = Conversation(
-        subject="买家已确认取消 " + i.items_name,
+        subject="卖家已确认取消 " + i.items_name,
         draft=False,
         shared_id=uuid.uuid4(),
         from_user_id=current_user.id,
@@ -304,7 +314,7 @@ def SecondHand_seller_cancel(item):
     url = request.args.get("next_url")
     return redirect(url)
 
-
+@exception_process
 @SecondHand_bp.route("/change_item/<item>", methods=['GET', 'POST'])
 def SecondHand_change_item(item):
     session = SecondHand.Session()

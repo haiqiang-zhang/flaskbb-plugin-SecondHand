@@ -1,5 +1,8 @@
 {#{% set page_title = title %}#}
 {#{% set active = "SecondHand_bp.SecondHand_mgmt" %}#}
+{% set page_title = "二手交易管理 - 交易超时" %}
+{% set active = "SecondHand_management_bp.outdated_transaction" %}
+
 
 {% extends theme("management/management_layout.html") %}
 
@@ -20,23 +23,22 @@
     <div class="col-md-3 settings-col">
         <div class="nav-sidebar">
             <ul class="nav">
-                {{ navlink('management.forums', _("Manage Forums")) }}
-                {{ navlink('management.add_forum', _("Add Forum")) }}
-                {{ navlink('management.add_category', _("Add Category")) }}
+                {{ navlink('SecondHand_management_bp.outdated_transaction', "交易超时") }}
+                {{ navlink('SecondHand_management_bp.outdated_transaction', "正在交易") }}
+                {{ navlink('SecondHand_management_bp.outdated_transaction', "已发布") }}
+                {{ navlink('SecondHand_management_bp.outdated_transaction', "交易完成") }}
             </ul>
         </div>
     </div>
 
 
-    <div class="col settings-col with-left-border">
+    <div class="col-md-9 settings-col with-left-border">
         <div class="card settings">
             <div class="card-header settings-header">
-                <span class="fas fa-hand-holding-usd"></span> 二手交易管理
+                <span class="fas fa-hand-holding-usd"></span>交易超时
             </div>
             <div class="card-body settings-body">
-                <form class="row p-2" role="form" method="post">
 
-                </form>
             </div>
         </div>
     </div>

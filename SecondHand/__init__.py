@@ -12,6 +12,7 @@ from flaskbb.display.navigation import NavigationLink
 from flaskbb.forum.models import Forum
 from flaskbb.utils.forms import SettingValueType
 from .views import SecondHand_bp
+from .management_view import SecondHand_management_bp
 from .database import connect_database
 from itertools import chain
 from flask_allows import Permission
@@ -38,6 +39,9 @@ def flaskbb_extensions(app):
 def flaskbb_load_blueprints(app):
     app.register_blueprint(
         SecondHand_bp, url_prefix=app.config.get("PLUGIN_SECONDHAND_URL_PREFIX", "/SecondHand")
+    )
+    app.register_blueprint(
+        SecondHand_management_bp, url_prefix="/SecondHand_management"
     )
 
 
@@ -69,7 +73,7 @@ def flaskbb_tpl_admin_settings_menu():
     from flaskbb.utils.requirements import IsAdmin  # noqa: circular dependency
     if Permission(IsAdmin, identity=current_user):
         return [
-            ("SecondHand_bp.SecondHand_mgmt", "二手交易管理", "fas fa-hand-holding-usd")
+            ("SecondHand_management_bp.outdated_transaction", "二手交易管理", "fas fa-hand-holding-usd")
         ]
 
 
@@ -81,6 +85,11 @@ def flaskbb_tpl_admin_settings_menu():
 # @hookimpl
 # def flaskbb_load_translations():
 #     return os.path.join(os.path.dirname(__file__), "translations")
+
+# @hookimpl(trylast=True)
+# def check_before_del_user(user=None):
+#     session = Session()
+#     session.query(Items).filter(
 
 
 

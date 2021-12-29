@@ -56,8 +56,8 @@
                             data-bs-target="#page-buyer-ontransaction" type="button" role="tab"
                             aria-controls="button-buyer-ontransaction"
                             aria-selected="false" onclick="hideOffcanvasCategory()">正在交易
-                        {% if onTransaction|length != 0 %}
-                            <span class="badge bg-danger p-1">{{ onTransaction|length }}</span>
+                        {% if buyer_onTransaction|length != 0 %}
+                            <span class="badge bg-danger p-1">{{ buyer_onTransaction|length }}</span>
                         {% endif %}
                     </button>
                     <button class="nav-link m-1" id="button-buyer-success" data-bs-toggle="pill"
@@ -98,8 +98,8 @@
                         data-bs-target="#page-buyer-ontransaction" type="button" role="tab"
                         aria-controls="button-buyer-ontransaction"
                         aria-selected="false">正在交易
-                    {% if onTransaction|length != 0 %}
-                        <span class="badge bg-danger p-1">{{ onTransaction|length }}</span>
+                    {% if buyer_onTransaction|length != 0 %}
+                        <span class="badge bg-danger p-1">{{ buyer_onTransaction|length }}</span>
                     {% endif %}
                 </button>
                 <button class="nav-link m-1 px-3 w-100" id="button-buyer-success" data-bs-toggle="pill"
@@ -370,12 +370,6 @@
                                         <a class="text-primary h4"
                                            href="{{ url_for("SecondHand_bp.SecondHand_desc", item=i.id) }}">商品详情页</a>
                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                            {% if i.orderStatusId == 6 %}
-                                                <button class="btn btn-primary" type="button" data-bs-toggle="modal"
-                                                        data-bs-target="">
-                                                    修改并重新上架
-                                                </button>
-                                            {% endif %}
                                             <button class="btn btn-danger" type="button" data-bs-toggle="modal"
                                                     data-bs-target="#confirmDel"
                                                     data-bs-delUrl="location.href='{{ url_for("SecondHand_bp.SecondHand_del_myRelease",item=i.id, next_url=url_for("SecondHand_bp.SecondHand_userRecord", tabTarget="#page-buyer-success")) }}'"
@@ -650,8 +644,9 @@
             var ChangeItemsForm = change_items.querySelector('#ChangeItemsForm')
             ChangeItemsForm.setAttribute("action", url)
 
-            //transform form data
-            $("#ChangeButton").on("click", function (event) {
+            //submit form data with ajax
+            var ChangeButton = document.getElementById("ChangeButton")
+            ChangeButton.onclick = function changeItemsAjax(event) {
                 event.preventDefault();
                 var form = new FormData(document.getElementById("ChangeItemsForm"));
                 $.ajax({
@@ -698,7 +693,7 @@
                     </div>`
                     }
                 })
-            })
+            }
         })
 
 
@@ -711,7 +706,5 @@
         }
     </script>
     <p>* 交易完成页面中包含取消的订单</p>
-
-
     {% include 'helper/alert_svg.html' %}
 {% endblock %}
