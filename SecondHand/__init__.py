@@ -34,8 +34,6 @@ def flaskbb_extensions(app):
     Session = connect_database(app)
 
 
-
-
 @hookimpl
 def flaskbb_load_blueprints(app):
     app.register_blueprint(
