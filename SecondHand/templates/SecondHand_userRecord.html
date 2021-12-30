@@ -185,10 +185,27 @@
                                      data-bs-parent="#accordionFlush-ontransaction">
                                     <div class="accordion-body">
                                         <h4 class="text-secondary">买家信息</h4>
-                                        <p>&nbsp;<span class="fw-bold text-muted ">手机号</span> {{ i.buyer_phone }}</p>
-                                        <p>&nbsp;<span class="fw-bold text-muted ">Email</span> {{ i.buyer_email }}</p>
-                                        <p>&nbsp;<span class="fw-bold text-muted ">地址</span> {{ i.buyer_location }}</p>
-                                        <p>&nbsp;<span class="fw-bold text-muted ">留言</span> {{ i.buyer_comment }}</p>
+                                        {% if User.query.filter(i.buyerID == User.id).one_or_none() is none %}
+                                            <p>&nbsp;&nbsp;<a role="button"
+                                                              class="btn btn-outline-primary disabled">您无法访问对方主页</a></p>
+                                        {% else %}
+                                            <p>&nbsp;&nbsp;<a role="button"
+                                                              href="{{ User.query.filter(i.buyerID == User.id).one_or_none().url }}"
+                                                              class="btn btn-outline-primary">{{ User.query.filter(i.buyerID == User.id).one_or_none().username }}&nbsp;个人主页</a>
+                                            </p>
+                                        {% endif %}
+                                        <p>&nbsp;&nbsp;<span class="fw-bold text-muted ">手机号</span> {{ i.buyer_phone }}
+                                        </p>
+                                        <p>&nbsp;&nbsp;<span
+                                                class="fw-bold text-muted ">Email</span> {{ i.buyer_email }}</p>
+                                        <p>&nbsp;&nbsp;<span
+                                                class="fw-bold text-muted ">地址</span> {{ i.buyer_location }}</p>
+                                        <p>&nbsp;&nbsp;<span class="fw-bold text-muted ">留言</span> {{ i.buyer_comment }}
+                                        </p>
+                                        <h4 class="text-secondary">订单信息</h4>
+                                        <p>&nbsp;&nbsp;<span
+                                                class="fw-bold text-muted ">下单时间</span> {{ i.start_transaction_date }}
+                                        </p>
                                         <a class="text-primary h4"
                                            href="{{ url_for("SecondHand_bp.SecondHand_desc", item=i.id) }}">商品详情页</a>
                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
@@ -247,6 +264,31 @@
                                 <div id="success-flush-items-{{ id(i) }}" class="accordion-collapse collapse"
                                      data-bs-parent="#accordionFlush-success">
                                     <div class="accordion-body">
+                                        <h4 class="text-secondary">买家信息</h4>
+                                        {% if User.query.filter(i.buyerID == User.id).one_or_none() is none %}
+                                            <p>&nbsp;&nbsp;<a role="button"
+                                                              class="btn btn-outline-primary disabled">您无法访问对方主页</a></p>
+                                        {% else %}
+                                            <p>&nbsp;&nbsp;<a role="button"
+                                                              href="{{ User.query.filter(i.buyerID == User.id).one_or_none().url }}"
+                                                              class="btn btn-outline-primary">{{ User.query.filter(i.buyerID == User.id).one_or_none().username }}&nbsp;个人主页</a>
+                                            </p>
+                                        {% endif %}
+                                        <p>&nbsp;&nbsp;<span class="fw-bold text-muted ">手机号</span> {{ i.buyer_phone }}
+                                        </p>
+                                        <p>&nbsp;&nbsp;<span
+                                                class="fw-bold text-muted ">Email</span> {{ i.buyer_email }}</p>
+                                        <p>&nbsp;&nbsp;<span
+                                                class="fw-bold text-muted ">地址</span> {{ i.buyer_location }}</p>
+                                        <p>&nbsp;&nbsp;<span class="fw-bold text-muted ">留言</span> {{ i.buyer_comment }}
+                                        </p>
+                                        <h4 class="text-secondary">订单信息</h4>
+                                        <p>&nbsp;&nbsp;<span
+                                                class="fw-bold text-muted ">下单时间</span> {{ i.start_transaction_date }}
+                                        </p>
+                                        <p>&nbsp;&nbsp;<span
+                                                class="fw-bold text-muted ">交易完成时间</span> {{ i.success_transaction_date }}
+                                        </p>
                                         <a class="text-primary h4"
                                            href="{{ url_for("SecondHand_bp.SecondHand_desc", item=i.id) }}">商品详情页</a>
                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
@@ -301,6 +343,29 @@
                                      class="accordion-collapse collapse"
                                      data-bs-parent="#accordionFlush-buyer-ontransaction">
                                     <div class="accordion-body">
+                                        <h4 class="text-secondary">您的交易联系方式</h4>
+                                        <p>&nbsp;&nbsp;<span class="fw-bold text-muted ">手机号</span> {{ i.buyer_phone }}
+                                        </p>
+                                        <p>&nbsp;&nbsp;<span
+                                                class="fw-bold text-muted ">Email</span> {{ i.buyer_email }}</p>
+                                        <p>&nbsp;&nbsp;<span
+                                                class="fw-bold text-muted ">地址</span> {{ i.buyer_location }}</p>
+                                        <p>&nbsp;&nbsp;<span class="fw-bold text-muted ">留言</span> {{ i.buyer_comment }}
+                                        </p>
+                                        <h4 class="text-secondary">订单信息</h4>
+                                        {% if User.query.filter(i.sellerID == User.id).one_or_none() is none %}
+                                            <p>&nbsp;&nbsp;<a role="button"
+                                                              class="btn btn-outline-primary disabled">您无法访问卖家个人主页</a>
+                                            </p>
+                                        {% else %}
+                                            <p>&nbsp;&nbsp;<a role="button"
+                                                              href="{{ User.query.filter(i.sellerID == User.id).one_or_none().url }}"
+                                                              class="btn btn-outline-primary">卖家&nbsp;{{ User.query.filter(i.sellerID == User.id).one_or_none().username }}&nbsp;个人主页</a>
+                                            </p>
+                                        {% endif %}
+                                        <p>&nbsp;&nbsp;<span
+                                                class="fw-bold text-muted ">下单时间</span> {{ i.start_transaction_date }}
+                                        </p>
                                         <a class="text-primary h4"
                                            href="{{ url_for("SecondHand_bp.SecondHand_desc", item=i.id) }}">商品详情页</a>
                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
@@ -367,6 +432,32 @@
                                 <div id="buyer-success-flush-items-{{ id(i) }}" class="accordion-collapse collapse"
                                      data-bs-parent="#accordionFlush-buyer-success">
                                     <div class="accordion-body">
+                                        <h4 class="text-secondary">您的交易联系方式</h4>
+                                        <p>&nbsp;&nbsp;<span class="fw-bold text-muted ">手机号</span> {{ i.buyer_phone }}
+                                        </p>
+                                        <p>&nbsp;&nbsp;<span
+                                                class="fw-bold text-muted ">Email</span> {{ i.buyer_email }}</p>
+                                        <p>&nbsp;&nbsp;<span
+                                                class="fw-bold text-muted ">地址</span> {{ i.buyer_location }}</p>
+                                        <p>&nbsp;&nbsp;<span class="fw-bold text-muted ">留言</span> {{ i.buyer_comment }}
+                                        </p>
+                                        <h4 class="text-secondary">订单信息</h4>
+                                        {% if User.query.filter(i.sellerID == User.id).one_or_none() is none %}
+                                            <p>&nbsp;&nbsp;<a role="button"
+                                                              class="btn btn-outline-primary disabled">您无法访问卖家个人主页</a>
+                                            </p>
+                                        {% else %}
+                                            <p>&nbsp;&nbsp;<a role="button"
+                                                              href="{{ User.query.filter(i.sellerID == User.id).one_or_none().url }}"
+                                                              class="btn btn-outline-primary">卖家&nbsp;{{ User.query.filter(i.sellerID == User.id).one_or_none().username }}&nbsp;个人主页</a>
+                                            </p>
+                                        {% endif %}
+                                        <p>&nbsp;&nbsp;<span
+                                                class="fw-bold text-muted ">下单时间</span> {{ i.start_transaction_date }}
+                                        </p>
+                                        <p>&nbsp;&nbsp;<span
+                                                class="fw-bold text-muted ">交易完成时间</span> {{ i.success_transaction_date }}
+                                        </p>
                                         <a class="text-primary h4"
                                            href="{{ url_for("SecondHand_bp.SecondHand_desc", item=i.id) }}">商品详情页</a>
                                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">

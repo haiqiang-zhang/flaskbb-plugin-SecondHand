@@ -33,7 +33,7 @@ def exception_process(fn):
             fn(*args,**kwargs)
         except:
             FlashAndRedirect(
-                message="操作失败",
+                message="SecondHand平台错误，错误码：{}".format(fn.__name__),
                 level="danger",
                 endpoint="forum.index"
             )

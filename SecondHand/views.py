@@ -89,6 +89,7 @@ def SecondHand_userRecord():
     buyer_success = session.query(Items).filter(Items.buyerID == current_user.id, Items.orderStatusId.in_([4, 6])).all()
     tabTarget = request.args.get("tabTarget")
     form_change = ChangeItemsForm()
+    print(User.query.filter(2 == User.id).one_or_none())
     return render_template(
         "SecondHand_userRecord.html",
         myRelease=onSalse,
@@ -99,7 +100,8 @@ def SecondHand_userRecord():
         buyer_success=buyer_success,
         tabTarget=tabTarget,
         form_change=form_change,
-        id=id
+        id=id, # It is a function
+        User=User # it is a class
     )
 
 @exception_process
@@ -228,6 +230,7 @@ def SecondHand_seller_success(item):
         session = SecondHand.Session()
         i: Items = session.query(Items).filter(Items.id == item).one()
         i.orderStatusId = 4
+        i.success_transaction_date = datetime.datetime.now()
         session.commit()
     url = request.args.get("next_url")
     return redirect(url)
@@ -279,6 +282,7 @@ def SecondHand_seller_cancel(item):
     session = SecondHand.Session()
     i: Items = session.query(Items).filter(Items.id == item).one()
     i.orderStatusId = 6
+    i.success_transaction_date = datetime.datetime.now()
     session.commit()
     # send message to seller
     purchase_message = "系统自动发送\n&#9989;您取消购买的 {} 商品，卖家已确认取消，交易完成" \
