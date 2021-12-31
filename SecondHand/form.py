@@ -9,7 +9,7 @@ class ReleaseItemsForm(FlaskForm):
     price = DecimalField("price", validators=[NumberRange(min=0, message="请输入正确的价格（只能包含数字且大于等于0）")])
     desc = TextAreaField("desc")
     main_picture_url = TextField("main_picture_url")
-    main_picture = FileField(validators=[FileAllowed(['jpg', 'png', 'webp'], '仅支持上传 jpg, png, webp')])
+    main_picture = FileField(validators=[FileAllowed(['jpg', 'png', 'webp', 'jpeg'], '仅支持上传 jpg, png, webp, jpeg')])
     submit = SubmitField("Submit")
 
 
@@ -44,5 +44,5 @@ class ChangeItemsForm(FlaskForm):
     price = TextField("price", validators=[numberRange_or_null_check])
     desc = TextAreaField("desc")
     main_picture_url = TextField("main_picture_url")
-    main_picture = FileField(validators=[FileAllowed(['jpg', 'png', 'webp'], '仅支持上传 jpg, png, webp')])
+    main_picture = FileField(validators=[FileAllowed(['jpg', 'png', 'webp', 'jpeg'], '仅支持上传 jpg, png, webp, jpeg')])
     submit = SubmitField("Submit")

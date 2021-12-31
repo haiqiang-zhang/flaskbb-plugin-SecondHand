@@ -28,16 +28,24 @@ import uuid
 from .model import Items, Items_del
 from .helper import upload_item_picture, no_right, exception_process
 from flask_wtf.file import FileStorage
-
 SecondHand_bp = Blueprint("SecondHand_bp", __name__, template_folder="templates", static_folder="static")
 
 
 @SecondHand_bp.before_request
-def check_fresh_login():
+def check_before_request():
     """Checks if the login is fresh for the current user, otherwise the user
-    has to reauthenticate."""
+            has to reauthenticate."""
     if not login_fresh():
         return current_app.login_manager.needs_refresh()
+    if current_user.primary_group.banned:
+        f_r = FlashAndRedirect(
+            message="您被禁止访问SecondHand平台，请联系论坛管理团队",
+            level="danger",
+            endpoint="forum.index"
+        )
+        return f_r()
+
+
 
 @exception_process
 @SecondHand_bp.route("/", methods=['GET', 'POST'])
@@ -172,8 +180,9 @@ def SecondHand_desc(item):
 # -----------------------------------
 #   change items or del
 # -----------------------------------
-@exception_process
+
 @SecondHand_bp.route("/del_myRelease/<item>")
+@exception_process
 def SecondHand_del_myRelease(item):
     session = SecondHand.Session()
     i: Items = session.query(Items).filter(Items.id == item).one()
@@ -204,13 +213,15 @@ def SecondHand_del_myRelease(item):
         session.add(item_del)
         session.delete(i)
         session.commit()
+        url = request.args.get("next_url")
+        return redirect(url)
     else:
-        no_right()
-    url = request.args.get("next_url")
-    return redirect(url)
+        return no_right()
 
-@exception_process
+
+
 @SecondHand_bp.route("/buyer_success/<item>")
+@exception_process
 def SecondHand_buyer_success(item):
     session = SecondHand.Session()
     i: Items = session.query(Items).filter(Items.id == item).one()
@@ -218,25 +229,28 @@ def SecondHand_buyer_success(item):
         i.orderStatusId = 3
         session.commit()
         url = request.args.get("next_url")
+        return redirect(url)
     else:
         session.close()
-        no_right()
-    return redirect(url)
+        return no_right()
 
-@exception_process
+
+
 @SecondHand_bp.route("/seller_success/<item>")
+@exception_process
 def SecondHand_seller_success(item):
+    session = SecondHand.Session()
+    i: Items = session.query(Items).filter(Items.id == item).one()
     if current_user.id == i.sellerID:
-        session = SecondHand.Session()
-        i: Items = session.query(Items).filter(Items.id == item).one()
         i.orderStatusId = 4
         i.success_transaction_date = datetime.datetime.now()
         session.commit()
     url = request.args.get("next_url")
     return redirect(url)
 
-@exception_process
+
 @SecondHand_bp.route("/buyer_cancel/<item>")
+@exception_process
 def SecondHand_buyer_cancel(item):
     session = SecondHand.Session()
     i: Items = session.query(Items).filter(Items.id == item).one()
@@ -276,8 +290,9 @@ def SecondHand_buyer_cancel(item):
     url = request.args.get("next_url")
     return redirect(url)
 
-@exception_process
+
 @SecondHand_bp.route("/seller_cancel/<item>")
+@exception_process
 def SecondHand_seller_cancel(item):
     session = SecondHand.Session()
     i: Items = session.query(Items).filter(Items.id == item).one()
@@ -318,8 +333,9 @@ def SecondHand_seller_cancel(item):
     url = request.args.get("next_url")
     return redirect(url)
 
-@exception_process
+
 @SecondHand_bp.route("/change_item/<item>", methods=['GET', 'POST'])
+@exception_process
 def SecondHand_change_item(item):
     session = SecondHand.Session()
     form = ChangeItemsForm()
@@ -346,7 +362,6 @@ def SecondHand_change_item(item):
                 current_user.id,
                 form.items_name.data)
             i.main_picture_url = file_path
-        i.orderStatusId = 1
         session.commit()
         return json.dumps({"validate": "success"})
     else:

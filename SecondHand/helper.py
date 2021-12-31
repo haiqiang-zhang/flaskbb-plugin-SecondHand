@@ -1,7 +1,9 @@
 import os
 import datetime
 from flask_wtf.file import FileStorage
+from flaskbb.utils.helpers import FlashAndRedirect
 from functools import wraps
+
 
 def upload_item_picture(path, file_data, user_id, name):
     if not (isinstance(file_data, FileStorage) and file_data):
@@ -19,21 +21,27 @@ def upload_item_picture(path, file_data, user_id, name):
 
 
 def no_right():
-    FlashAndRedirect(
+    f_r = FlashAndRedirect(
         message="您没有权限",
         level="danger",
         endpoint="forum.index"
     )
+    return f_r()
 
 
 def exception_process(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
+        result = None
         try:
-            fn(*args,**kwargs)
-        except:
-            FlashAndRedirect(
+            result = fn(*args, **kwargs)
+        except Exception:
+            f_r = FlashAndRedirect(
                 message="SecondHand平台错误，错误码：{}".format(fn.__name__),
                 level="danger",
                 endpoint="forum.index"
             )
+            result = f_r()
+        return result
+    return wrapper
+
