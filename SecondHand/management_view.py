@@ -1,5 +1,5 @@
 import datetime
-from flask import Blueprint, current_app
+from flask import Blueprint, current_app, flash
 from flaskbb.extensions import allows
 from flaskbb.utils.requirements import IsAdmin
 from flaskbb.utils.helpers import FlashAndRedirect, render_template
@@ -7,6 +7,7 @@ import SecondHand
 from .helper import exception_process, count_outdated_items
 from flask_login import login_fresh
 from flaskbb.user.models import User
+from flaskbb.plugins.models import PluginRegistry
 
 from .model import Items
 
@@ -30,8 +31,17 @@ def check_fresh_login():
                      endpoint="management.overview"))
 @exception_process
 def outdated_transaction():
+    plugin = PluginRegistry.query.filter_by(name="SecondHand").first()
+    outdated_range = -1
+    if plugin and not plugin.settings:
+        flash(
+            "SecondHand未被安装，请在后台管理的插件窗口安装SecondHand",
+            "warning",
+        )
+    else:
+        outdated_range = plugin.settings["outdated_range"]
     session = SecondHand.Session()
-    before_date = datetime.datetime.now() - datetime.timedelta(days=10)
+    before_date = datetime.datetime.now() - datetime.timedelta(days=outdated_range)
     outdated_items = session.query(Items) \
         .filter(Items.orderStatusId.in_([2, 3, 5]), Items.start_transaction_date < before_date).all()
     return render_template("SecondHand_management/SecondHand_mgmt_outdated.html",

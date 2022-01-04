@@ -83,7 +83,7 @@ SETTINGS = {
         "value_type": SettingValueType.integer,
         "name": "交易超时天数",
         "description": (
-            "设置这个订单从开始交易到今天的天数大于多少算作交易超时"
+            "设置订单从开始交易的时间到今天的天数大于多少算作交易超时"
         ),
         "extra": {"coerce": int},
     }
