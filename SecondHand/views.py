@@ -9,25 +9,20 @@
 import json
 import os
 from flask_allows import Permission
-from flask import Blueprint, current_app, flash, request, g, redirect, url_for, jsonify, send_from_directory
-from flask_babelplus import gettext as _
+from flask import Blueprint, current_app, request, redirect, url_for
 from flask_login import current_user, login_fresh
-from flaskbb.extensions import allows
 from flaskbb.utils.requirements import IsAdmin
 from flaskbb.utils.helpers import render_template, FlashAndRedirect
-from flaskbb.forum.models import Topic, Post, Forum
-from flaskbb.user.models import User, Group
-from flaskbb.plugins.models import PluginRegistry
-from flaskbb.utils.helpers import time_diff, get_online_users
-from flaskbb.utils.settings import flaskbb_config
+from flaskbb.user.models import User
 import SecondHand
 import datetime
 from .form import ReleaseItemsForm, PurchaseItemsForm, ChangeItemsForm
 from conversations.models import Conversation, Message
 import uuid
 from .model import Items, Items_del
-from .helper import upload_item_picture, no_right, exception_process
+from .helper import upload_item_picture, no_right, exception_process, check_seller_existing
 from flask_wtf.file import FileStorage
+
 SecondHand_bp = Blueprint("SecondHand_bp", __name__, template_folder="templates", static_folder="static")
 
 
@@ -46,12 +41,12 @@ def check_before_request():
         return f_r()
 
 
-
-@exception_process
 @SecondHand_bp.route("/", methods=['GET', 'POST'])
+@exception_process
 def SecondHand_index():
     session = SecondHand.Session()
-    items = session.query(Items).filter(Items.orderStatusId == 1)
+    items = session.query(Items).filter(Items.orderStatusId == 1).all()
+    items = filter(check_seller_existing, items)
     user_id = current_user.id
     form = ReleaseItemsForm()
     if request.method == 'GET':
@@ -84,8 +79,9 @@ def SecondHand_index():
         print(error)
         return json.dumps(error)
 
-@exception_process
+
 @SecondHand_bp.route("/userRecord")
+@exception_process
 def SecondHand_userRecord():
     session = SecondHand.Session()
     onSalse = session.query(Items).filter(Items.sellerID == current_user.id, Items.orderStatusId == 1).all()
@@ -97,7 +93,6 @@ def SecondHand_userRecord():
     buyer_success = session.query(Items).filter(Items.buyerID == current_user.id, Items.orderStatusId.in_([4, 6])).all()
     tabTarget = request.args.get("tabTarget")
     form_change = ChangeItemsForm()
-    print(User.query.filter(2 == User.id).one_or_none())
     return render_template(
         "SecondHand_userRecord.html",
         myRelease=onSalse,
@@ -108,12 +103,13 @@ def SecondHand_userRecord():
         buyer_success=buyer_success,
         tabTarget=tabTarget,
         form_change=form_change,
-        id=id, # It is a function
-        User=User # it is a class
+        id=id,  # It is a function
+        User=User  # it is a class
     )
 
-@exception_process
+
 @SecondHand_bp.route("/SecondHand_desc/<item>", methods=['GET', 'POST'])
+@exception_process
 def SecondHand_desc(item):
     session = SecondHand.Session()
     i: Items = session.query(Items).filter(Items.id == item).one()
@@ -127,7 +123,8 @@ def SecondHand_desc(item):
             user=user,
             request=request,
             form=form,
-            form_change=form_change
+            form_change=form_change,
+            User=User  # It is Model of user
         )
     if form.validate_on_submit():
         i.buyerID = current_user.id
@@ -186,12 +183,15 @@ def SecondHand_desc(item):
 def SecondHand_del_myRelease(item):
     session = SecondHand.Session()
     i: Items = session.query(Items).filter(Items.id == item).one()
-    if i.orderStatusId in [6,4] and current_user.id == i.sellerID:
+    url = request.args.get("next_url")
+    if i.orderStatusId in [6, 4] and current_user.id == i.sellerID:
         i.sellerID = None
         session.commit()
-    elif i.orderStatusId in [6,4] and current_user.id == i.buyerID:
+        return redirect(url)
+    elif i.orderStatusId in [6, 4] and current_user.id == i.buyerID:
         i.buyerID = None
         session.commit()
+        return redirect(url)
     elif (i.orderStatusId == 1 and current_user.id == i.sellerID) or Permission(IsAdmin, identity=current_user):
         item_del = Items_del(
             prev_id=i.id,
@@ -213,11 +213,9 @@ def SecondHand_del_myRelease(item):
         session.add(item_del)
         session.delete(i)
         session.commit()
-        url = request.args.get("next_url")
         return redirect(url)
     else:
         return no_right()
-
 
 
 @SecondHand_bp.route("/buyer_success/<item>")
@@ -233,7 +231,6 @@ def SecondHand_buyer_success(item):
     else:
         session.close()
         return no_right()
-
 
 
 @SecondHand_bp.route("/seller_success/<item>")

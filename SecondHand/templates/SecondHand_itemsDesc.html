@@ -7,7 +7,8 @@
     {% from theme('_macros/pagination.html') import render_pagination, generate_obj_id, generate_post_url %}
     {% from theme('_macros/form.html') import render_input_field, render_editor_field, render_submit_field %}
 
-    <h1 class="text-center text-primary mb-3"><a href="{{ url_for("SecondHand_bp.SecondHand_index") }}">讯飞未来港BBS二手交易平台</a></h1>
+    <h1 class="text-center text-primary mb-3"><a
+            href="{{ url_for("SecondHand_bp.SecondHand_index") }}">讯飞未来港BBS二手交易平台</a></h1>
     <div class="card topic">
         <div class="card-header topic-header">
             <a href="" class="fs-5">{{ item.items_name }}</a>
@@ -45,22 +46,25 @@
                     <div class="post-footer">
                         <div class="post-menu float-end">
                             {% if user==current_user %}
-                                <!-- Edit -->
+                                <!-- Edit and Del-->
                                 {% if item.orderStatusId in [1,6] %}
                                     <button class="btn btn-icon far fa-edit text-green" type="button"
                                             data-bs-toggle="modal" data-tooltip="tooltip"
                                             data-bs-target="#ChangeItemModal"
                                             title="" data-bs-original-title="修改物品" aria-label="修改物品"></button>
+                                    <button class="btn btn-icon far fa-trash-alt text-red" type="button"
+                                            data-bs-toggle="modal" data-tooltip="tooltip"
+                                            title="" data-bs-original-title="删除物品" data-bs-target="#confirmDel"
+                                            aria-label="删除物品"></button>
                                 {% else %}
                                     <button class="btn btn-icon far fa-edit text-muted" type="button"
                                             data-tooltip="tooltip" title="交易期间不可修改物品"
-                                            aria-label="不可修改物品"></button>
+                                            aria-label="交易期间不可修改物品"></button>
+                                    <button class="btn btn-icon far fa-trash-alt text-muted" type="button"
+                                            data-tooltip="tooltip" title="交易期间不可删除物品"
+                                            aria-label="交易期间不可删除物品"></button>
                                 {% endif %}
-                                <!-- Delete -->
-                                <button class="btn btn-icon far fa-trash-alt text-red" type="button"
-                                        data-bs-toggle="modal" data-tooltip="tooltip"
-                                        title="" data-bs-original-title="删除物品" data-bs-target="#confirmDel"
-                                        aria-label="删除物品"></button>
+
                             {% endif %}
                         </div>
                     </div>
@@ -70,12 +74,12 @@
     </div>
     {% if user != current_user %}
         <div class="d-flex justify-content-end mb-4 my-2">
-            {% if item.orderStatusId == 1 %}
+            {% if item.orderStatusId == 1 and User.query.filter(User.id == item.sellerID).one_or_none() is not none %}
                 <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal"
                         data-bs-target="#PurchaseModal">购买
                 </button>
             {% else %}
-                <button class="btn btn-secondary btn-lg" disabled>已被购买</button>
+                <button class="btn btn-secondary btn-lg" disabled>无法购买</button>
             {% endif %}
         </div>
     {% endif %}

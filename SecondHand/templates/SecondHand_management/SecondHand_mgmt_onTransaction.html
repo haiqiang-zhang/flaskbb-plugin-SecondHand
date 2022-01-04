@@ -1,5 +1,5 @@
-{% set page_title = "二手交易管理 - 交易超时" %}
-{% set active = "SecondHand_management_bp.outdated_transaction" %}
+{% set page_title = "二手交易管理 - 正在交易" %}
+{% set active = "SecondHand_management_bp.onTransaction" %}
 
 
 {% extends theme("management/management_layout.html") %}
@@ -21,7 +21,7 @@
     <div class="col-md-3 settings-col">
         <div class="nav-sidebar">
             <ul class="nav">
-                {{ navlink_badge('SecondHand_management_bp.outdated_transaction', "交易超时", badge = outdated_items|length) }}
+                {{ navlink_badge('SecondHand_management_bp.outdated_transaction', "交易超时", badge = count_outdated_items) }}
                 {{ navlink_badge('SecondHand_management_bp.onTransaction', "正在交易") }}
                 {{ navlink_badge('SecondHand_management_bp.onSale', "已发布") }}
                 {{ navlink_badge('SecondHand_management_bp.success', "交易完成") }}
@@ -33,7 +33,7 @@
     <div class="col-md-9 settings-col with-left-border">
         <div class="card settings">
             <div class="card-header settings-header">
-                <span class="fas fa-hand-holding-usd"></span>交易超时
+                <span class="fas fa-hand-holding-usd"></span>正在交易
             </div>
             <div class="card-body settings-body">
 
@@ -45,6 +45,7 @@
                                                                               title="Select All"/>
                         </div>
                         <div class="col-md-2 col-sm-2 col-2 meta-item">物品名</div>
+                        <div class="col-md-1 col-sm-1 col-1 meta-item">状态</div>
                         <div class="col-md-2 col-sm-2 col-2 meta-item">价格</div>
                         <div class="col-md-2 col-sm-2 col-2 meta-item">卖家</div>
                         <div class="col-md-2 col-sm-2 col-2 meta-item">买家</div>
@@ -68,7 +69,7 @@
                             </div>
                         </div>
                     </div>
-                    {% for i in outdated_items %}
+                    {% for i in items %}
                         <div class="row settings-row hover">
                             <div class="col-md-1 col-sm-1 col-1" style="width: 3%"><input type="checkbox" name="rowid"
                                                                         class="action-checkbox"
@@ -76,9 +77,10 @@
                             <div class="col-md-2 col-sm-2 col-2"><a
                                     href="{{ url_for("SecondHand_management_bp.mgmt_item_desc", item=i.id) }}">{{ i.items_name }}</a>
                             </div>
+                            <div class="col-md-1 col-sm-1 col-1 text-warning">{{ i.orderStatusId }}</div>
                             <div class="col-md-2 col-sm-2 col-2 text-danger">¥{{ i.price }}</div>
                             {% if User.query.filter(User.id == i.sellerID).one_or_none() is none %}
-                                <div class="col-md-2 col-sm-2 col-2">用户已删除</div>
+                                <div class="col-md-2 col-sm-2 col-3">用户已删除</div>
                             {% else %}
                                 <div class="col-md-2 col-sm-2 col-2"><a
                                         href="{{ User.query.filter(User.id == i.sellerID).one_or_none().url }}">{{ User.query.filter(User.id == i.sellerID).one_or_none().username }}</a>
@@ -91,6 +93,7 @@
                                         href="{{ User.query.filter(User.id == i.buyerID).one_or_none().url }}">{{ User.query.filter(User.id == i.buyerID).one_or_none().username }}</a>
                                 </div>
                             {% endif %}
+
                             <div class="col-2">
                                 {% if current_user|is_admin %}
                                     {{ action_confirm(
@@ -104,7 +107,7 @@
                         </div>
                     {% else %}
                         <div class="row settings-row">
-                            <div class="col-12">没有交易超时的订单</div>
+                            <div class="col-12">没有正在交易的订单</div>
                         </div>
                     {% endfor %}
                 </div> <!-- end settings content -->
@@ -116,6 +119,6 @@
 
 {% block scripts %}
     <script>
-    var bulk_actions = new window.app.BulkActions();
+        var bulk_actions = new window.app.BulkActions();
     </script>
 {% endblock %}

@@ -1,0 +1,92 @@
+{% set page_title = "二手交易管理 - 订单详情" %}
+{% set active = "SecondHand_management_bp.outdated_transaction" %}
+{% extends theme("management/management_layout.html") %}
+{% block breadcrumb %}
+    <ol class="breadcrumb flaskbb-breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('forum.index') }}">{% trans %}Forum{% endtrans %}</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('management.overview') }}">{% trans %}
+            Management{% endtrans %}</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('SecondHand_management_bp.outdated_transaction') }}">二手交易管理</a>
+        </li>
+        <li class="breadcrumb-item active">{{ i.id }}
+        </li>
+    </ol>
+{% endblock %}
+
+{% block management_content %}
+    <h3 class="text-primary m-2 text-center">ID:{{ i.id }} 订单详情</h3>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th scope="col">Key</th>
+            <th scope="col">Value</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="table-active">
+            <th scope="row">ID</th>
+            <td>{{ i.id }}</td>
+        </tr>
+        <tr class="">
+            <th scope="row">Item Name</th>
+            <td>{{ i.items_name }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Price</th>
+            <td colspan="2" class="text-danger">¥{{ i.price }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Seller ID</th>
+            <td colspan="2">{{ i.sellerID }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Buyer ID</th>
+            <td colspan="2">{{ i.buyerID }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Buyer Phone</th>
+            <td colspan="2">{{ i.buyer_phone }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Buyer Email</th>
+            <td colspan="2">{{ i.buyer_email }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Buyer Location</th>
+            <td colspan="2">{{ i.buyer_location }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Buyer Comment</th>
+            <td colspan="2">{{ i.buyer_comment }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Post Date</th>
+            <td colspan="2">{{ i.post_date }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Start Transaction Date</th>
+            <td colspan="2">{{ i.start_transaction_date }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Success Transaction Date</th>
+            <td colspan="2">{{ i.success_transaction_date }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Main Picture Url</th>
+            <td colspan="2">{{ i.main_picture_url }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Description</th>
+            <td colspan="2">{{ i.description }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Order Status ID</th>
+            <td colspan="2">{{ i.orderStatusId }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+
+
+
+{% endblock %}

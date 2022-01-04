@@ -77,38 +77,14 @@ def flaskbb_tpl_admin_settings_menu():
         ]
 
 
-# @hookimpl
-# def flaskbb_load_migrations():
-#     return os.path.join(os.path.dirname(__file__), "migrations")
-#
-#
-# @hookimpl
-# def flaskbb_load_translations():
-#     return os.path.join(os.path.dirname(__file__), "translations")
-
-# @hookimpl(trylast=True)
-# def check_before_del_user(user=None):
-#     session = Session()
-#     session.query(Items).filter(
-
-
-
 SETTINGS = {
-    # "forum_ids": {
-    #     "value": [1],
-    #     "value_type": SettingValueType.selectmultiple,
-    #     "name": "Forum IDs",
-    #     "description": (
-    #         "The forum ids from which forums the posts "
-    #         "should be displayed on the portal."
-    #     ),
-    #     "extra": {"choices": available_forums, "coerce": int},
-    # },
-    # "recent_topics": {
-    #     "value": 10,
-    #     "value_type": SettingValueType.integer,
-    #     "name": "Number of Recent Topics",
-    #     "description": "The number of topics in Recent Topics.",
-    #     "extra": {"min": 1},
-    # },
+    "outdated_range": {
+        "value": 10,
+        "value_type": SettingValueType.integer,
+        "name": "交易超时天数",
+        "description": (
+            "设置这个订单从开始交易到今天的天数大于多少算作交易超时"
+        ),
+        "extra": {"coerce": int},
+    }
 }

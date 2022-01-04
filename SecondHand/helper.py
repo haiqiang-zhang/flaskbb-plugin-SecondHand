@@ -3,6 +3,9 @@ import datetime
 from flask_wtf.file import FileStorage
 from flaskbb.utils.helpers import FlashAndRedirect
 from functools import wraps
+import SecondHand
+from flaskbb.user.models import User
+from .model import Items
 
 
 def upload_item_picture(path, file_data, user_id, name):
@@ -32,7 +35,6 @@ def no_right():
 def exception_process(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        result = None
         try:
             result = fn(*args, **kwargs)
         except Exception:
@@ -45,3 +47,17 @@ def exception_process(fn):
         return result
     return wrapper
 
+
+def check_seller_existing(item: Items):
+    if User.query.filter(User.id == item.sellerID).one_or_none() is None:
+        return False
+    return True
+
+
+def count_outdated_items() -> int:
+    session = SecondHand.Session()
+    before_date = datetime.datetime.now() - datetime.timedelta(days=10)
+    count_items = len(session.query(Items) \
+                      .filter(Items.orderStatusId.in_([2, 3, 5]),
+                              Items.start_transaction_date < before_date).all())
+    return count_items

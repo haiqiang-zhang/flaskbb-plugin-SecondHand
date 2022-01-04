@@ -1,0 +1,14 @@
+{% macro is_active(endpoint, active='') %}
+    {%- if endpoint == request.endpoint or endpoint == active or active == True -%}
+        active
+    {%- endif -%}
+{% endmacro %}
+
+
+{% macro navlink_badge(endpoint, name, icon='', active='', urlforkwargs=None, badge='') %}
+<li class="nav-item">
+    <a class="nav-link {{ is_active(endpoint, active) }}" href="{% if urlforkwargs %}{{ url_for(endpoint, **urlforkwargs) }}{% else %}{{ url_for(endpoint) }}{% endif %}">
+        {% if icon %}<i class="{{ icon }}"></i> {% endif %} {{ name }} <span class="badge bg-danger p-1">{{ badge }}</span>
+    </a>
+</li>
+{% endmacro %}

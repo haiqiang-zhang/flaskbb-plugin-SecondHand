@@ -116,17 +116,17 @@
                     <div class="accordion accordion-flush" id="accordionFlush-onsalse">
                         {% for i in myRelease %}
                             <div class="accordion-item my-2 border border-primary border-2 rounded-2">
-                                <h2 class="accordion-header" id="flush-heading-{{ id(i) }}">
+                                <h2 class="accordion-header" id="flush-heading-{{ i.id }}">
                                     <button class="accordion-button collapsed align-items-center"
                                             type="button"
                                             data-bs-toggle="collapse"
-                                            data-bs-target="#flush-items-{{ id(i) }}">
+                                            data-bs-target="#flush-items-{{ i.id }}">
                                         <h3 class="m-0 p-0">{{ i.items_name }}</h3> &nbsp;&nbsp;&nbsp;
                                         <p class="text-danger fw-bold m-0 p-0"> ¥{{ i.price }}</p> &nbsp;&nbsp;
                                         <p class="text-secondary m-0 p-0">发布时间: {{ i.post_date }}</p>
                                     </button>
                                 </h2>
-                                <div id="flush-items-{{ id(i) }}" class="accordion-collapse collapse"
+                                <div id="flush-items-{{ i.id }}" class="accordion-collapse collapse"
                                      data-bs-parent="#accordionFlush-onsalse">
                                     <div class="accordion-body">
                                         <a class="text-primary h4"
@@ -159,13 +159,12 @@
                         {% for i in onTransaction %}
                             <div class="accordion-item my-2 border border-primary border-2 rounded-2">
                                 <h2 class="accordion-header"
-                                    id="ontransaction-flush-heading-{{ id(i) }}">
+                                    id="ontransaction-flush-heading-{{ i.id }}">
                                     <button class="accordion-button collapsed align-items-center"
                                             type="button"
                                             data-bs-toggle="collapse"
-                                            data-bs-target="#ontransaction-flush-items-{{ id(i) }}"
-                                            aria-expanded="false"
-                                            aria-controls="ontransaction-flush-items-{{ id(i) }}">
+                                            data-bs-target="#ontransaction-flush-items-{{ i.id }}"
+                                            aria-expanded="false">
                                         <h3 class="m-0 p-0">{{ i.items_name }}</h3> &nbsp;&nbsp;&nbsp;
                                         <p class="text-danger fw-bold m-0 p-0"> ¥{{ i.price }}</p>&nbsp;&nbsp;
                                         <p class="text-secondary m-0 p-0">发布时间: {{ i.post_date }}</p>&nbsp;&nbsp;
@@ -180,8 +179,8 @@
                                         {% endif %}
                                     </button>
                                 </h2>
-                                <div id="ontransaction-flush-items-{{ id(i) }}" class="accordion-collapse collapse"
-                                     aria-labelledby="flush-heading-{{ id(i) }}"
+                                <div id="ontransaction-flush-items-{{ i.id }}" class="accordion-collapse collapse"
+                                     aria-labelledby="flush-heading-{{ i.id }}"
                                      data-bs-parent="#accordionFlush-ontransaction">
                                     <div class="accordion-body">
                                         <h4 class="text-secondary">买家信息</h4>
@@ -244,11 +243,11 @@
                     <div class="accordion accordion-flush" id="accordionFlush-success">
                         {% for i in success %}
                             <div class="accordion-item my-2 border border-primary border-2 rounded-2">
-                                <h2 class="accordion-header" id="success-flush-heading-{{ id(i) }}">
+                                <h2 class="accordion-header" id="success-flush-heading-{{ i.id }}">
                                     <button class="accordion-button collapsed align-items-center"
                                             type="button"
                                             data-bs-toggle="collapse"
-                                            data-bs-target="#success-flush-items-{{ id(i) }}">
+                                            data-bs-target="#success-flush-items-{{ i.id }}">
                                         <h3 class="m-0 p-0">{{ i.items_name }}</h3> &nbsp;&nbsp;&nbsp;
                                         <p class="text-danger fw-bold m-0 p-0"> ¥{{ i.price }}</p>&nbsp;&nbsp;
                                         <p class="text-secondary m-0 p-0">发布时间: {{ i.post_date }}</p>&nbsp;&nbsp;
@@ -261,7 +260,7 @@
                                         {% endif %}
                                     </button>
                                 </h2>
-                                <div id="success-flush-items-{{ id(i) }}" class="accordion-collapse collapse"
+                                <div id="success-flush-items-{{ i.id }}" class="accordion-collapse collapse"
                                      data-bs-parent="#accordionFlush-success">
                                     <div class="accordion-body">
                                         <h4 class="text-secondary">买家信息</h4>
@@ -324,7 +323,7 @@
                                     <button class="accordion-button collapsed align-items-center"
                                             type="buttonx"
                                             data-bs-toggle="collapse"
-                                            data-bs-target="#buyer-ontransaction-flush-items-{{ id(i) }}">
+                                            data-bs-target="#buyer-ontransaction-flush-items-{{ i.id }}">
                                         <h3 class="m-0 p-0p">{{ i.items_name }}</h3> &nbsp;&nbsp;&nbsp;
                                         <p class="text-danger fw-bold m-0 p-0"> ¥{{ i.price }}</p>&nbsp;&nbsp;
                                         <p class="text-secondary m-0 p-0">下单时间: {{ i.start_transaction_date }}</p>&nbsp;&nbsp;
@@ -339,7 +338,7 @@
                                         {% endif %}
                                     </button>
                                 </h2>
-                                <div id="buyer-ontransaction-flush-items-{{ id(i) }}"
+                                <div id="buyer-ontransaction-flush-items-{{ i.id }}"
                                      class="accordion-collapse collapse"
                                      data-bs-parent="#accordionFlush-buyer-ontransaction">
                                     <div class="accordion-body">
@@ -416,7 +415,7 @@
                                     <button class="accordion-button collapsed align-items-center"
                                             type="button"
                                             data-bs-toggle="collapse"
-                                            data-bs-target="#buyer-success-flush-items-{{ id(i) }}">
+                                            data-bs-target="#buyer-success-flush-items-{{ i.id }}">
                                         <h3 class="m-0 p-0">{{ i.items_name }}</h3> &nbsp;&nbsp;&nbsp;
                                         <p class="text-danger fw-bold m-0 p-0"> ¥{{ i.price }}</p>&nbsp;&nbsp;
                                         <p class="text-secondary m-0 p-0">下单时间: {{ i.post_date }}</p>&nbsp;&nbsp;
@@ -429,7 +428,7 @@
                                         {% endif %}
                                     </button>
                                 </h2>
-                                <div id="buyer-success-flush-items-{{ id(i) }}" class="accordion-collapse collapse"
+                                <div id="buyer-success-flush-items-{{ i.id }}" class="accordion-collapse collapse"
                                      data-bs-parent="#accordionFlush-buyer-success">
                                     <div class="accordion-body">
                                         <h4 class="text-secondary">您的交易联系方式</h4>
@@ -725,16 +724,13 @@
         change_items.addEventListener('show.bs.modal', function (event) {
             // Button that triggered the modal
             var button = event.relatedTarget
-
             var name = button.getAttribute('data-bs-title')
             var modalTitle = change_items.querySelector('.modal-title')
             modalTitle.textContent = name
-
             var url = button.getAttribute('data-bs-url')
             var next_url = button.getAttribute('data-bs-next-url')
             var ChangeItemsForm = change_items.querySelector('#ChangeItemsForm')
             ChangeItemsForm.setAttribute("action", url)
-
             //submit form data with ajax
             var ChangeButton = document.getElementById("ChangeButton")
             ChangeButton.onclick = function changeItemsAjax(event) {
@@ -791,7 +787,6 @@
         //hide offcanvas
         var myOffcanvas = document.getElementById('offcanvas-category')
         var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas)
-
         function hideOffcanvasCategory() {
             bsOffcanvas.hide();
         }
