@@ -5,14 +5,28 @@
 {% endblock %}
 {% block content %}
     <div class="row">
-        <h1 class="text-center text-primary">讯飞未来港BBS二手交易平台</h1>
+        <h1 class="text-center text-primary">{{ SecondHand_config["SecondHandName"] }}</h1>
         <div class="container-fluid my-4">
-
             <div class="d-flex justify-content-end mb-4">
-                <button type="button" class="btn btn-secondary btn-lg" data-bs-toggle="modal"
+                <button type="button" class="btn btn-secondary btn-lg shadow" data-bs-toggle="modal"
                         data-bs-target="#ReleaseItemsModal">+ 发布物品
                 </button>
             </div>
+{#            <div class="row justify-content-between align-content-center mb-4 row-cols-4">#}
+{#                                <div class="col-12 offset-md-3 col-md-6">#}
+{#                                    <div class="input-group mb-3 ">#}
+{#                                        <input type="text" class="form-control shadow" placeholder="请输入搜索的内容"#}
+{#                                               aria-label="Recipient's username" aria-describedby="button-addon2" style="height: 55px; border-radius: 20px 0 0 20px;">#}
+{#                                        <button class="btn btn-outline-secondary shadow" type="button" id="button-addon2" style="width: 55px; border-radius: 0 20px 20px 0;"><span#}
+{#                                                class="fas fa-search" ></span></button>#}
+{#                                    </div>#}
+{#                                </div>#}
+{#                <div class="col-12 col-md-3">#}
+{##}
+{#                </div>#}
+{#            </div>#}
+
+
             <div class="row row-cols-2 row-cols-lg-4 g-4">
                 {% for i in items %}
                     <div class="col">

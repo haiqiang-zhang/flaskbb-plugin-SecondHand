@@ -35,10 +35,6 @@ def numberRange_or_null_check(form, field):
         raise ValidationError("请输入正确的价格（只能包含数字且大于等于0）")
 
 
-
-
-
-
 class ChangeItemsForm(FlaskForm):
     items_name = TextField("items_name")
     price = TextField("price", validators=[numberRange_or_null_check])

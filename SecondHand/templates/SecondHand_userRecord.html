@@ -17,6 +17,7 @@
 
 
 {% block profile_content %}
+    {% from 'helper/SecondHand_modal.html' import change_item_modal, confirm_modal %}
     <main>
         <!-- 小屏幕下的订单分类 breakpoint<md -->
         <button class="btn btn-primary d-md-none" type="button" data-bs-toggle="offcanvas"
@@ -479,156 +480,17 @@
 
 
     <!--确认删除Modal-->
-    <div class="modal fade" tabindex="-1" id="confirmDel">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Modal title</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>确认删除此已发布的物品吗？(此操作不可恢复)</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-                    <button type="button" class="btn btn-danger" id="confirmDelButton">
-                        删除
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
+    {{ confirm_modal(modal_id='confirmDel', btn_id='confirmDelButton', text="确认删除此已发布的物品吗？(此操作不可恢复)", btn_class="btn btn-danger", btn_text="删除") }}
     <!--买家确认收货Modal-->
-    <div class="modal fade" tabindex="-1" id="confirm-buyer-success">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Modal title</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>确认收货吗？(收货后需卖家确认完成交易后交易成功)</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-                    <button type="button" class="btn btn-success" id="confirm-buyer-success-button">
-                        确认
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
+    {{ confirm_modal(modal_id='confirm-buyer-success', btn_id='confirm-buyer-success-button', text="确认收货吗？(收货后需卖家确认完成交易后交易成功)", btn_class="btn btn-success", btn_text="确认") }}
     <!--卖家确认完成交易（订单完结）Modal-->
-    <div class="modal fade" tabindex="-1" id="confirm-seller-success">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Modal title</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>确认完成交易吗？(确认后即交易成功)</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-                    <button type="button" class="btn btn-success" id="confirm-seller-success-button">
-                        确认
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
+    {{ confirm_modal(modal_id='confirm-seller-success', btn_id='confirm-seller-success-button', text="确认完成交易吗？(确认后即交易成功)", btn_class="btn btn-success", btn_text="确认") }}
     <!--买家取消订单Modal-->
-    <div class="modal fade" tabindex="-1" id="cancel-buyer">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Modal title</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>确认取消订单吗？(取消后需买家同意后交易取消，请与买家商议解决，如有争议请联系论坛管理团队)</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-                    <button type="button" class="btn btn-warning" id="cancel-buyer-button">
-                        取消
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
+    {{ confirm_modal(modal_id='cancel-buyer', btn_id='cancel-buyer-button', text="确认取消订单吗？(取消后需买家同意后交易取消，请与买家商议解决，如有争议请联系论坛管理团队)", btn_class="btn btn-warning", btn_text="取消") }}
     <!--卖家确认取消（订单完结）Modal-->
-    <div class="modal fade" tabindex="-1" id="cancel-seller">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Modal title</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>确认取消吗？(取消后订单完结，交易完成)</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-                    <button type="button" class="btn btn-warning" id="cancel-seller-button">
-                        确认取消
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    {{ confirm_modal(modal_id='cancel-seller', btn_id='cancel-seller-button', text="确认取消吗？(取消后订单完结，交易完成)", btn_class="btn btn-warning", btn_text="确认取消") }}
     <!--修改物品Model-->
-    <div class="modal fade" id="ChangeItemModal" tabindex="-1" aria-labelledby="ChangeItemModal" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">修改物品</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div id="ReleaseMessage">
-                </div>
-                <p class="text-warning fw-bold text-center p-1 m-1">仅输入需要修改的项</p>
-                <form method="post" action=""
-                      id="ChangeItemsForm">
-                    {{ form_change.csrf_token }}
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="recipient-name" class="col-form-label">物品名称</label>
-                            {{ form_change.items_name(class="form-control" ) }}
-                        </div>
-                        <div class="mb-3">
-                            <label for="message-text" class="col-form-label">价格</label>
-                            <div class="input-group mb-3">
-                                <span class="input-group-text">¥</span>
-                                {{ form_change.price(class="form-control" ) }}
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="message-text" class="col-form-label">上传图片</label>
-                            {{ form_change.main_picture(class="form-control") }}
-                        </div>
-                        <div class="mb-3">
-                            <label for="message-text" class="col-form-label">描述</label>
-                            {{ form_change.desc(class="form-control" ) }}
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-primary btn-lg" id="ChangeButton">修改</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    {{ change_item_modal(form=form_change, modal_id='ChangeItemModal', btn_id='ChangeButton') }}
 
 
 

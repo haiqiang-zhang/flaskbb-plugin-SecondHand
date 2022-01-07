@@ -9,12 +9,11 @@
 import json
 import os
 from flask_allows import Permission
-
 from flask import Blueprint, current_app, request, redirect, url_for
 from flask_login import current_user, login_fresh
 from flaskbb.utils.requirements import IsAdmin
 from flaskbb.utils.helpers import render_template, FlashAndRedirect
-from flaskbb.user.models import User
+from flaskbb.user.models import User, Guest
 import SecondHand
 import datetime
 from .form import ReleaseItemsForm, PurchaseItemsForm, ChangeItemsForm
@@ -33,7 +32,7 @@ def check_before_request():
             has to reauthenticate."""
     if not login_fresh():
         return current_app.login_manager.needs_refresh()
-    if current_user.primary_group.banned:
+    if isinstance(current_user, Guest) or current_user.primary_group.banned:
         f_r = FlashAndRedirect(
             message="您被禁止访问SecondHand平台，请联系论坛管理团队",
             level="danger",
